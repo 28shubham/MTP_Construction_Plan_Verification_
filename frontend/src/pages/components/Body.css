@@ -1,0 +1,43 @@
+/* Body.css */
+.body-container {
+    padding: 20px;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+  
+  .dropzone {
+    border: 2px dashed #ddd;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+  }
+  
+  .dropzone p {
+    margin: 0;
+  }
+  
+  .file-info {
+    margin-top: 20px;
+  }
+  
+  .verification-results {
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  /* Body.css */
+.navigation-link {
+    margin-top: 20px;
+  }
+  
+  .navigation-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-size: 16px;
+  }
+  
+  .navigation-link a:hover {
+    text-decoration: underline;
+  }
+  
