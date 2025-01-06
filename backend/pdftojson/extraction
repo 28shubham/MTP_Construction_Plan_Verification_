@@ -1,0 +1,59 @@
+from pdfminer.high_level import extract_pages
+from pdfminer.layout import LTTextContainer, LTChar
+
+def extract_room_dimensions(pdf_path):
+    """
+    Extract room labels and their coordinates from a PDF file.
+
+    Parameters:
+    - pdf_path (str): The file path to the PDF document.
+
+    Returns:
+    - list: A list of dictionaries containing room labels and their coordinates.
+    """
+    room_data = []
+    keywords = ['Room', 'OPEN KITCHEN', 'TOILET', 'BED ROOM', 'Living Room',
+                'HALL', 'Bathroom', 'Dining', 'Store' , 'Toilet' , 'Kitchen']  # Add more keywords as needed
+
+    # Parse pages from the PDF
+    for page_layout in extract_pages(pdf_path):
+        for element in page_layout:
+            if isinstance(element, LTTextContainer):
+                text = element.get_text().strip()
+
+                # Check for keywords in the text
+                if any(keyword in text for keyword in keywords):
+                    # Collect coordinates of the text block
+                    x0, y0, x1, y1 = element.bbox
+                    room_data.append({
+                        'label': text,
+                        'coordinates': {
+                            'x0': x0,
+                            'y0': y0,
+                            'x1': x1,
+                            'y1': y1
+                        }
+                    })
+
+    return room_data
+
+def main():
+    # File path to the PDF
+    pdf_path = "/content/13.pdf"  # Replace with the actual path to your PDF file
+
+    # Extract room dimensions
+    room_dimensions = extract_room_dimensions(pdf_path)
+
+    # Display the extracted data
+    if room_dimensions:
+        print("Extracted Room Dimensions and Coordinates:")
+        print("-" * 60)
+        for room in room_dimensions:
+            print(f"Room Label: {room['label']}")
+            print(f"Coordinates: {room['coordinates']}")
+            print("-" * 60)
+    else:
+        print("No room labels were detected in the PDF.")
+
+if __name__ == "__main__":
+    main()

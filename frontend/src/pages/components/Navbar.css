@@ -1,5 +1,6 @@
 /* Navbar.css */
 
+/* General Navbar Styling */
 .navbar {
   position: fixed;
   top: 0;
@@ -15,7 +16,12 @@
   box-shadow: 0 4px 2px -2px rgba(0, 0, 0, 0.2);
 }
 
-/* Navbar logo on the left */
+/* Add space between Navbar and body content */
+body {
+  margin-top: 70px; /* Adjust based on navbar height */
+}
+
+/* Navbar Logo */
 .navbar-logo {
   color: white;
   font-size: 1.5rem;
@@ -23,7 +29,7 @@
   text-decoration: none;
 }
 
-/* Navbar links centered */
+/* Navbar Links */
 .navbar-links {
   list-style: none;
   display: flex;
@@ -44,14 +50,14 @@
   text-decoration: underline;
 }
 
-/* Logout button to the right */
+/* Navbar Actions */
 .navbar-actions {
   margin-left: auto; /* Push the logout button to the right */
 }
 
+/* Logout Button */
 .logout-btn {
   background-color: #f44336;
-  left: 0;
   color: white;
   border: none;
   padding: 0.5rem 1rem;
@@ -59,13 +65,13 @@
   font-size: 1rem;
   border-radius: 5px;
   margin-left: 1.5rem; /* Spacing from other links */
-  justify-content: space-between;
 }
 
 .logout-btn:hover {
   background-color: #d32f2f;
 }
 
+/* Navbar Text Span */
 span {
   color: white;
   font-size: 1.1rem;

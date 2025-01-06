@@ -3,12 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { handleSuccess, handleError } from "../utils";
 import { ToastContainer } from "react-toastify";
 import Navbar from "./components/Navbar"; // Import Navbar component
-import Body from "./components/Body"; // Import Navbar component
+import Body from "./components/Body"; // Import Body component
 import VerificationForm from "./VerificationForm";
+
 function Home() {
   const [loggedInUser, setLoggedInUser] = useState("");
   const [products, setProducts] = useState([]); // Initialize with an empty array
   const navigate = useNavigate();
+
   // Function to verify token with backend
   const verifyToken = async () => {
     const token = localStorage.getItem("token");
@@ -63,16 +65,15 @@ function Home() {
 
   return (
     <div>
-      {/* Add the Navbar at the top of your Home page */}
+      {/* Navbar */}
       <Navbar />
-      <Body />
-      {/* <span>
-        <Link to="/VerificationForm ">Go to Verification by User Input</Link>
-      </span> */}
 
-      {/* Home page content
-      <h1>{loggedInUser}</h1> */}
-      {/* <button onClick={handleLogout}>Log Out</button> */}
+      {/* Add spacing between Navbar and Body */}
+      <div style={{ marginTop: "20px" }}>
+        <Body />
+      </div>
+
+      {/* Product Listing */}
       <div>
         {products.length > 0 ? (
           products.map((item, index) => (

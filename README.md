@@ -1,1 +1,0 @@
-# MTP_Construction_Plan_Verification_

@@ -1,43 +1,153 @@
-/* Body.css */
+/* General Styles for the Body Container */
 .body-container {
-    padding: 20px;
-    max-width: 800px;
-    margin: 0 auto;
+  font-family: 'Arial', sans-serif;
+  background: linear-gradient(to bottom right, #3ab1707c, #caaf64, #ca6666);
+  color: #333;
+  text-align: center;
+  padding: 30px 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 50px auto;
+  max-width: 800px;
+  animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Heading Styles */
+.body-container h2,
+.body-container h3 {
+  font-size: 1.4em;
+  margin-top: 30px;
+  color: #22223b;
+}
+
+/* Button General Styles */
+.verify-button,
+.navigate-button {
+  display: inline-block;
+  margin: 15px 10px;
+  padding: 10px 20px;
+  font-size: 1em;
+  font-weight: bold;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Verify Button Styling */
+.verify-button {
+  background: linear-gradient(135deg, #00c6ff, #0072ff);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 114, 255, 0.3);
+}
+
+.verify-button:hover {
+  background: linear-gradient(135deg, #0072ff, #00c6ff);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(0, 114, 255, 0.5);
+}
+
+/* Navigate Button Styling */
+.navigate-button {
+  background: linear-gradient(135deg, #ff512f, #dd2476);
+  color: #fff;
+  box-shadow: 0 4px 8px rgba(255, 81, 47, 0.3);
+}
+
+.navigate-button:hover {
+  background: linear-gradient(135deg, #dd2476, #ff512f);
+  transform: translateY(-3px);
+  box-shadow: 0 6px 12px rgba(255, 81, 47, 0.5);
+}
+
+/* Dropdown Container */
+.dropdown-container {
+  margin-top: 20px;
+  padding: 20px;
+  background: linear-gradient(to bottom right, #acd8c07c, #caaf64, #efd8d8);
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  animation: slideIn 1.2s ease-in-out;
+}
+
+/* Label Styling */
+.dropdown-container label {
+  font-size: 1em;
+  font-weight: bold;
+  margin-bottom: 10px;
+  display: block;
+  color: #333;
+}
+
+/* Dropdown Select Styling */
+.dropdown-container select {
+  width: 80%;
+  max-width: 400px;
+  padding: 10px;
+  margin-top: 10px;
+  font-size: 1em;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: rgba(160, 191, 230, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.3s;
+}
+
+.dropdown-container select:focus {
+  outline: none;
+  border-color: #0072ff;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+      transform: translateY(-10px);
   }
-  
-  .dropzone {
-    border: 2px dashed #ddd;
-    padding: 20px;
-    text-align: center;
-    cursor: pointer;
+  to {
+      opacity: 1;
+      transform: translateY(0);
   }
-  
-  .dropzone p {
-    margin: 0;
+}
+
+@keyframes slideIn {
+  from {
+      transform: translateX(-20px);
+      opacity: 0;
   }
-  
-  .file-info {
-    margin-top: 20px;
+  to {
+      transform: translateX(0);
+      opacity: 1;
   }
-  
-  .verification-results {
-    margin-top: 20px;
-    border: 1px solid #ddd;
-    padding: 10px;
-    background-color: #f9f9f9;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .body-container {
+      padding: 20px 10px;
   }
-  /* Body.css */
-.navigation-link {
-    margin-top: 20px;
+
+  .verify-button,
+  .navigate-button {
+      width: 90%;
+      margin: 10px 0;
   }
-  
-  .navigation-link a {
-    color: #007bff;
-    text-decoration: none;
-    font-size: 16px;
+
+  .dropdown-container select {
+      width: 100%;
   }
-  
-  .navigation-link a:hover {
-    text-decoration: underline;
+}
+
+@media (max-width: 480px) {
+  .body-container h2,
+  .body-container h3 {
+      font-size: 1.2em;
   }
-  
+
+  .verify-button,
+  .navigate-button {
+      font-size: 0.9em;
+  }
+}
