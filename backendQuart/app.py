@@ -1,132 +1,174 @@
 import io
-import re
 import os
+import fitz  # PyMuPDF
+import logging
+from webcolors import rgb_to_name
 from quart import Quart, request, jsonify
-from pdfminer.high_level import extract_pages
-from pdfminer.layout import LTTextContainer
 from quart_cors import cors
 
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'pdf'}
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app = Quart(__name__)
 app = cors(app)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max file size
 
-def extract_room_dimensions(pdf_file):
-    room_data = []
-    keywords = [
-        'Room', 'OPEN KITCHEN', 'TOILET', 'BED ROOM', 'Living Room',
-        'HALL', 'Bathroom', 'Dining', 'Store', 'Toilet', 'Kitchen', 'WC',
-        'Wash', 'Master Bedroom', 'Guest Room', 'Study Room', 'Office',
-        'Pantry', 'Balcony', 'Lobby', 'Passage', 'Corridor', 'Garage', 'Pooja'
-    ]
-    
-    dimension_pattern = r"(\d+'(?:-\d+(?:\½)?)?\"?)\s*[xX×]\s*(\d+'(?:-\d+(?:\½)?)?\"?)"
-    
-    for page_layout in extract_pages(pdf_file):
-        for element in page_layout:
-            if isinstance(element, LTTextContainer):
-                text = element.get_text().strip().replace('\n', ' ')
-                
-                for keyword in keywords:
-                    if keyword.lower() in text.lower():
-                        matches = re.findall(dimension_pattern, text)
-                        x0, y0, x1, y1 = element.bbox
-                        if matches:
-                            for match in matches:
-                                length, width = match
-                                room_data.append({
-                                    'label': keyword,
-                                    'length': length,
-                                    'width': width,
-                                    'coordinates': {'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1}
-                                })
-                        else:
-                            room_data.append({
-                                'label': keyword,
-                                'length': 'N/A',
-                                'width': 'N/A',
-                                'coordinates': {'x0': x0, 'y0': y0, 'x1': x1, 'y1': y1}
-                            })
-    return room_data
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-def convert_to_feet(value):
-    match = re.match(r"(\d+)'(?:-(\d+))?(?:\½)?\"?", value)
-    if match:
-        feet = int(match.group(1))
-        inches = int(match.group(2)) if match.group(2) else 0
-        half_inch = 0.5 if '½' in value else 0
-        return feet + (inches / 12) + half_inch
-    return None
+def get_color_name(rgb):
+    try:
+        return rgb_to_name(tuple(int(c * 255) for c in rgb))
+    except ValueError:
+        return f"RGB({rgb[0]:.2f}, {rgb[1]:.2f}, {rgb[2]:.2f})"
 
-def verify_room_dimensions(space, length, width):
-    rules = {
-        'Room': (10, 10, 12, 14),
-        'Kitchen': (7, 8, 10, 12),
-        'Toilet': (4, 6, 7, 10),
-        'Hall': (12, 15, 16, 20),
+def get_room_type_from_color(rgb):
+    # Map rounded RGB values to room types
+    color_map = {
+        (0.30, 0.69, 0.31): "bedroom",
+        (1.00, 0.93, 0.23): "bathroom/toilet",
+        (0.96, 0.26, 0.21): "hall",
+        (0.61, 0.16, 0.69): "kitchen"
     }
-    if space in rules:
-        min_length, min_width, max_length, max_width = rules[space]
-        return (min_length <= length <= max_length) and (min_width <= width <= max_width)
-    return True
+    # Round to 2 decimal places for matching
+    rounded_rgb = tuple(round(c, 2) for c in rgb)
+    return color_map.get(rounded_rgb)
 
-def map_room_data(room_data):
-    refined_data = []
-    seen_coordinates = set()
-    
-    for room in room_data:
-        if room['length'] != 'N/A' and room['width'] != 'N/A':
-            length_ft = convert_to_feet(room['length'])
-            width_ft = convert_to_feet(room['width'])
+def extract_shapes_from_pdf(pdf_path):
+    shapes_data = []
+    try:
+        doc = fitz.open(pdf_path)
+        
+        for page_num in range(len(doc)):
+            page = doc[page_num]
+            page_height = page.rect.height
 
-            if length_ft and width_ft:
-                area_ft = length_ft * width_ft
-                is_valid = verify_room_dimensions(room['label'], length_ft, width_ft)
-                status = "✅ Valid" if is_valid else "❌ Invalid"
+            for shape in page.get_drawings():
+                bbox = shape.get("rect")
+                fill_color = shape.get("fill")
 
-                coordinates_tuple = (room['coordinates']['x0'], room['coordinates']['y0'], room['coordinates']['x1'], room['coordinates']['y1'])
-                
-                if coordinates_tuple not in seen_coordinates:
-                    seen_coordinates.add(coordinates_tuple)
-                    refined_data.append({
-                        'space': room['label'],
-                        'length': f"{length_ft:.2f} ft",
-                        'width': f"{width_ft:.2f} ft",
-                        'area': f"{area_ft:.2f} sq ft",
-                        'status': status,
-                        'coordinates': room['coordinates']
-                    })
-    return refined_data
+                if bbox and fill_color:
+                    # Try to map color to room type
+                    room_type = get_room_type_from_color(fill_color)
+                    if room_type:
+                        color_label = room_type
+                    else:
+                        color_label = get_color_name(fill_color)
+                    
+                    # Transform Y-coordinates to start from bottom-left
+                    x0, y0, x1, y1 = bbox.x0, page_height - bbox.y1, bbox.x1, page_height - bbox.y0
+                    
+                    # Calculate width and height
+                    width = abs(x1 - x0)
+                    height = abs(y1 - y0)
+
+                    shape_info = {
+                        "page": page_num + 1,
+                        "color": color_label,
+                        "rgb": tuple(round(c, 3) for c in fill_color),
+                        "coordinates": {
+                            "x0": round(x0, 2),
+                            "y0": round(y0, 2),
+                            "x1": round(x1, 2),
+                            "y1": round(y1, 2)
+                        },
+                        "dimensions": {
+                            "width": round(width, 2),
+                            "height": round(height, 2)
+                        }
+                    }
+                    shapes_data.append(shape_info)
+        
+        doc.close()
+        return shapes_data
+    except Exception as e:
+        logger.error(f"Error extracting shapes from PDF: {str(e)}")
+        raise
+
+@app.route('/health', methods=['GET'])
+async def health_check():
+    return jsonify({
+        "status": "healthy",
+        "message": "PDF Shape Extraction API is running"
+    }), 200
 
 @app.route('/verify-pdf', methods=['POST'])
 async def verify_pdf():
-    form_data = await request.files
-
-    if 'file' not in form_data:
-        return jsonify({"error": "No file part"}), 400
-
-    file = form_data['file']
-
-    if file.filename == '':
-        return jsonify({"error": "No selected file"}), 400
-
     try:
+        # Check if file is present in request
+        if 'file' not in (await request.files):
+            return jsonify({
+                "status": "error",
+                "message": "No file part in the request"
+            }), 400
+
+        file = (await request.files)['file']
+        
+        # Check if file was selected
+        if file.filename == '':
+            return jsonify({
+                "status": "error",
+                "message": "No file selected"
+            }), 400
+
+        # Check if file type is allowed
+        if not allowed_file(file.filename):
+            return jsonify({
+                "status": "error",
+                "message": "File type not allowed. Please upload a PDF file."
+            }), 400
+
+        # Save the uploaded file
         file_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         await file.save(file_path)
         
-        with open(file_path, 'rb') as pdf_file:
-            room_data = extract_room_dimensions(pdf_file)
+        logger.info(f"Processing file: {file.filename}")
         
-        mapped_data = map_room_data(room_data)
+        # Extract shapes from the PDF
+        shapes_data = extract_shapes_from_pdf(file_path)
+
+        # Count room types
+        room_counts = {
+            "bedroom": 0,
+            "bathroom/toilet": 0,
+            "hall": 0,
+            "kitchen": 0,
+            "other": 0
+        }
+        for shape in shapes_data:
+            color = shape.get("color", "other")
+            if color in room_counts:
+                room_counts[color] += 1
+            else:
+                room_counts["other"] += 1
         
+        # Clean up the temporary file
         os.remove(file_path)
         
-        return jsonify(mapped_data), 200
+        logger.info(f"Successfully processed {len(shapes_data)} shapes from {file.filename}")
+        
+        return jsonify({
+            "status": "success",
+            "message": f"Successfully extracted {len(shapes_data)} shapes",
+            "filename": file.filename,
+            "shapes": shapes_data,
+            "room_counts": room_counts
+        }), 200
+        
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        logger.error(f"Error processing PDF: {str(e)}")
+        return jsonify({
+            "status": "error",
+            "message": f"Error processing PDF: {str(e)}"
+        }), 500
 
 if __name__ == "__main__":
+    logger.info("Starting PDF Shape Extraction API...")
     app.run(debug=True, host='127.0.0.1', port=5000)
 

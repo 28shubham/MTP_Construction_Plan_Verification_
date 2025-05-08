@@ -12,6 +12,8 @@ import VFH from "./pages/VFH";
 import VGH from "./pages/VGH";
 import VRI from "./pages/VRI";
 import VSH from "./pages/VSH";
+import MakePdf from "./pages/MakePdf";
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const PrivateRoute = ({ element }) => {
@@ -38,6 +40,7 @@ function App() {
         <Route path="/VGH" element={<PrivateRoute element={<VGH />} />} />
         <Route path="/VRI" element={<PrivateRoute element={<VRI />} />} />
         <Route path="/VSH" element={<PrivateRoute element={<VSH />} />} />
+        <Route path="/make-pdf" element={<PrivateRoute element={<MakePdf />} />} />
       </Routes>
     </div>
   );

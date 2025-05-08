@@ -1,0 +1,38 @@
+/* Additional styles for AdminDashboard */
+.admin-dashboard {
+  min-height: 100vh;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .admin-dashboard {
+    padding: 1rem;
+  }
+}
+
+/* Animation for stat cards */
+.stat-card {
+  transition: transform 0.3s ease;
+}
+
+.stat-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Custom scrollbar for content */
+.dashboard-content::-webkit-scrollbar {
+  width: 8px;
+}
+
+.dashboard-content::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb {
+  background: #1a2a6c;
+  border-radius: 4px;
+}
+
+.dashboard-content::-webkit-scrollbar-thumb:hover {
+  background: #b21f1f;
+} 

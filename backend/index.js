@@ -2,7 +2,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const AuthRouter = require("./Routes/AuthRouter");
+const adminRoutes = require("./Routes/AdminRoutes");
 const ProductRouter = require("./Routes/ProductRouter");
+const buildingPlanRoutes = require("./Routes/buildingPlanRoutes");
+const constructionRuleRoutes = require("./Routes/constructionRuleRoutes");
+const simpleBuildingRuleRoutes = require("./Routes/simpleBuildingRuleRoutes");
+const verificationHistoryRoutes = require("./Routes/VerificationHistoryRoutes");
 const { verifyForm } = require("./Controllers/verificationController");
 const { PythonShell } = require("python-shell");
 const multer = require("multer");
@@ -15,17 +20,29 @@ require("./Models/db");
 const PdfDetails = require("./Models/pdfDetails");
 
 const app = express();
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 8081;
 
-// 🛡️ **Middleware**
+// CORS configuration
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// Body parser middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // Support form-data
-app.use(cors());
-app.use("/files", express.static(path.join(__dirname, "files"))); // Serve PDF files
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use("/files", express.static(path.join(__dirname, "files")));
 
-// 🛡️ **Authentication & Product Routes**
+// Routes
 app.use("/auth", AuthRouter);
+app.use("/admin", adminRoutes);
 app.use("/products", ProductRouter);
+app.use("/api/building-plans", buildingPlanRoutes);
+app.use("/api/construction-rules", constructionRuleRoutes);
+app.use("/api/simple-building-rules", simpleBuildingRuleRoutes);
+app.use("/api/user", verificationHistoryRoutes);
 
 // 🛡️ **Verify Form Route**
 app.post("/api/verifyForm", verifyForm);
@@ -59,12 +76,30 @@ app.post("/upload-files", upload.single("file"), async (req, res) => {
     });
   }
 
-  const { title } = req.body;
+  const { 
+    title, 
+    city, 
+    pincode, 
+    scale_value, 
+    scale_unit, 
+    scale_equals, 
+    scale_equals_unit 
+  } = req.body;
+  
   const fileName = req.file.filename;
 
   try {
     // Store file details in the database
-    const pdfEntry = await PdfDetails.create({ title, pdf: fileName });
+    const pdfEntry = await PdfDetails.create({ 
+      title, 
+      pdf: fileName,
+      city: city || null,
+      pincode: pincode || null,
+      scale_value: scale_value || "1",
+      scale_unit: scale_unit || "inch",
+      scale_equals: scale_equals || "1",
+      scale_equals_unit: scale_equals_unit || "feet"
+    });
 
     res.json({
       status: "ok",
