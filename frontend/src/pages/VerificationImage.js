@@ -7,21 +7,21 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Navbar from "./components/Navbar";
 import { getCitiesAndPincodesFromRules } from "../services/simpleBuildingRuleService";
-import { 
-  FaCloudUploadAlt, 
-  FaCheckCircle, 
-  FaTimesCircle, 
-  FaFileAlt, 
-  FaBuilding, 
-  FaSearch, 
-  FaRuler, 
+import {
+  FaCloudUploadAlt,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaFileAlt,
+  FaBuilding,
+  FaSearch,
+  FaRuler,
   FaRegCheckCircle,
   FaArrowRight,
   FaChartArea,
   FaHistory,
   FaUserLock,
   FaMapMarkerAlt,
-  FaMapPin
+  FaMapPin,
 } from "react-icons/fa";
 
 // Styled Components
@@ -32,16 +32,16 @@ const PageContainer = styled.div`
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
 `;
 
 const PageHeader = styled.div`
   text-align: center;
   margin-bottom: 2rem;
   position: relative;
-  
+
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     bottom: -0.75rem;
     left: 50%;
@@ -61,7 +61,7 @@ const PageTitle = styled.h2`
   display: flex;
   align-items: center;
   justify-content: center;
-  
+
   svg {
     margin-right: 0.75rem;
     font-size: 1.5rem;
@@ -78,7 +78,7 @@ const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 40% 60%;
   gap: 1.5rem;
-  
+
   @media (max-width: 768px) {
     grid-template-columns: 1fr;
   }
@@ -90,7 +90,7 @@ const Card = styled.div`
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
   padding: 1.5rem;
   transition: all 0.3s ease;
-  
+
   &:hover {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     transform: translateY(-3px);
@@ -112,7 +112,7 @@ const CardTitle = styled.h3`
   font-weight: 600;
   display: flex;
   align-items: center;
-  
+
   svg {
     margin-right: 0.5rem;
     color: #1a2a6c;
@@ -140,7 +140,7 @@ const Label = styled.label`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  
+
   svg {
     color: #1a2a6c;
   }
@@ -165,9 +165,9 @@ const StepsContainer = styled.div`
   justify-content: space-between;
   margin-bottom: 1.5rem;
   position: relative;
-  
+
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     top: 12px;
     left: 12px;
@@ -190,32 +190,35 @@ const StepIcon = styled.div`
   width: 24px;
   height: 24px;
   border-radius: 50%;
-  background: ${props => props.active ? 'linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%)' : 'white'};
-  border: 2px solid ${props => props.active ? 'transparent' : '#e5e7eb'};
+  background: ${(props) =>
+    props.active
+      ? "linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%)"
+      : "white"};
+  border: 2px solid ${(props) => (props.active ? "transparent" : "#e5e7eb")};
   display: flex;
   align-items: center;
   justify-content: center;
   margin-bottom: 0.4rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-  
+
   svg {
-    color: ${props => props.active ? 'white' : '#9ca3af'};
+    color: ${(props) => (props.active ? "white" : "#9ca3af")};
     font-size: 0.8rem;
   }
 `;
 
 const StepLabel = styled.span`
   font-size: 0.7rem;
-  color: ${props => props.active ? '#1a2a6c' : '#9ca3af'};
-  font-weight: ${props => props.active ? '600' : '400'};
+  color: ${(props) => (props.active ? "#1a2a6c" : "#9ca3af")};
+  font-weight: ${(props) => (props.active ? "600" : "400")};
   transition: all 0.3s ease;
 `;
 
 const FileInput = styled.div`
   position: relative;
   margin-top: 0.25rem;
-  
+
   input {
     opacity: 0;
     position: absolute;
@@ -237,24 +240,24 @@ const FileInputPreview = styled.div`
   transition: all 0.3s ease;
   position: relative;
   z-index: 1;
-  
+
   &:hover {
     border-color: #1a2a6c;
     background: rgba(26, 42, 108, 0.05);
   }
-  
+
   svg {
     font-size: 2.5rem;
     color: #1a2a6c;
     margin-bottom: 0.75rem;
   }
-  
+
   p {
     margin: 0.3rem 0;
     color: #6b7280;
     font-size: 0.9rem;
   }
-  
+
   strong {
     color: #1a2a6c;
     font-weight: 600;
@@ -273,13 +276,13 @@ const Select = styled.select`
   background-size: 1rem;
   padding-right: 2.5rem;
   transition: all 0.2s ease;
-  
+
   &:focus {
     outline: none;
     border-color: #1a2a6c;
     box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.15);
   }
-  
+
   &:disabled {
     background-color: #f3f4f6;
     cursor: not-allowed;
@@ -302,23 +305,23 @@ const SubmitButton = styled.button`
   justify-content: center;
   gap: 0.5rem;
   box-shadow: 0 4px 10px rgba(26, 42, 108, 0.2);
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 15px rgba(26, 42, 108, 0.3);
   }
-  
+
   &:active {
     transform: translateY(-1px);
   }
-  
+
   &:disabled {
     background: #9ca3af;
     transform: none;
     box-shadow: none;
     cursor: not-allowed;
   }
-  
+
   svg {
     font-size: 1rem;
   }
@@ -329,28 +332,32 @@ const VerifyButton = styled(SubmitButton)`
   width: 100%;
   margin-top: 1rem;
   box-shadow: 0 4px 10px rgba(5, 150, 105, 0.2);
-  
+
   &:hover {
     box-shadow: 0 6px 15px rgba(5, 150, 105, 0.3);
   }
 `;
 
 const NotificationContainer = styled.div`
-  background: ${props => props.type === 'success' ? 'linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)' : 'linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)'};
-  color: ${props => props.type === 'success' ? '#166534' : '#b91c1c'};
+  background: ${(props) =>
+    props.type === "success"
+      ? "linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%)"
+      : "linear-gradient(135deg, #fee2e2 0%, #fecaca 100%)"};
+  color: ${(props) => (props.type === "success" ? "#166534" : "#b91c1c")};
   padding: 0.75rem 1rem;
   border-radius: 10px;
   margin-bottom: 1.5rem;
   display: flex;
   align-items: center;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-  border-left: 4px solid ${props => props.type === 'success' ? '#166534' : '#b91c1c'};
-  
+  border-left: 4px solid
+    ${(props) => (props.type === "success" ? "#166534" : "#b91c1c")};
+
   svg {
     margin-right: 0.75rem;
     font-size: 1.2rem;
   }
-  
+
   p {
     margin: 0;
     font-size: 0.9rem;
@@ -387,7 +394,7 @@ const PDFPreviewTitle = styled.div`
   font-size: 1rem;
   font-weight: 600;
   width: 100%;
-  
+
   svg {
     color: #1a2a6c;
     margin-right: 0.4rem;
@@ -410,13 +417,13 @@ const EmptyState = styled.div`
   height: 350px;
   color: #9ca3af;
   text-align: center;
-  
+
   svg {
     font-size: 3.5rem;
     margin-bottom: 1rem;
     color: #d1d5db;
   }
-  
+
   p {
     margin: 0.3rem 0;
     font-size: 0.9rem;
@@ -440,7 +447,7 @@ const ScaleInput = styled.input`
   border-radius: 8px;
   text-align: center;
   font-size: 0.9rem;
-  
+
   &:focus {
     outline: none;
     border-color: #1a2a6c;
@@ -462,7 +469,7 @@ const HelpText = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  
+
   svg {
     color: #1a2a6c;
     font-size: 0.8rem;
@@ -476,7 +483,7 @@ const ErrorText = styled.div`
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  
+
   svg {
     font-size: 0.8rem;
   }
@@ -492,7 +499,7 @@ const RetryButton = styled.button`
   padding: 0;
   font-size: 0.85rem;
   font-weight: 500;
-  
+
   &:hover {
     color: #b21f1f;
   }
@@ -513,13 +520,13 @@ const LoginLink = styled.a`
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
   border: 1px solid #e5e7eb;
-  
+
   &:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     border-color: #1a2a6c;
   }
-  
+
   svg {
     font-size: 1rem;
   }
@@ -536,7 +543,7 @@ const ScaleBadge = styled.div`
   padding: 0.4rem 0.6rem;
   border-radius: 6px;
   width: fit-content;
-  
+
   svg {
     color: #1a2a6c;
     font-size: 0.8rem;
@@ -553,7 +560,7 @@ const LocationBadge = styled.span`
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  
+
   svg {
     font-size: 0.7rem;
   }
@@ -562,7 +569,7 @@ const LocationBadge = styled.span`
 // Before the VerificationImage component
 const isUserLoggedIn = () => {
   // Check if the user has a valid token in local storage
-  return localStorage.getItem('token') !== null;
+  return localStorage.getItem("token") !== null;
 };
 
 function VerificationImage() {
@@ -574,7 +581,7 @@ function VerificationImage() {
     scale_value: "1",
     scale_unit: "inch",
     scale_equals: "1",
-    scale_equals_unit: "feet"
+    scale_equals_unit: "feet",
   });
   const [latestImage, setLatestImage] = useState(null);
   const [notification, setNotification] = useState("");
@@ -605,7 +612,7 @@ function VerificationImage() {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      if (file.type !== 'application/pdf') {
+      if (file.type !== "application/pdf") {
         showNotification("Please upload a PDF file only.", "error");
         return;
       }
@@ -622,23 +629,31 @@ function VerificationImage() {
   const fetchCitiesAndPincodes = () => {
     setIsLoading(true);
     setLoadError(false);
-    console.log('Fetching cities and pincodes from building rules...');
-    
+    console.log("Fetching cities and pincodes from building rules...");
+
     getCitiesAndPincodesFromRules()
       .then((data) => {
-        console.log('Received cities data from building rules:', data);
+        console.log("Received cities data from building rules:", data);
         if (data && data.cities) {
           setCities(data.cities);
-          console.log(`Loaded ${data.cities.length} cities with pincodes from building rules`);
+          console.log(
+            `Loaded ${data.cities.length} cities with pincodes from building rules`
+          );
         } else {
-          console.warn('No cities data received from the building rules');
+          console.warn("No cities data received from the building rules");
           setCities([]);
           setLoadError(true);
         }
       })
       .catch((error) => {
-        console.error("Error fetching cities and pincodes from building rules:", error);
-        showNotification("Failed to load cities data from building rules. Please try again later.", "error");
+        console.error(
+          "Error fetching cities and pincodes from building rules:",
+          error
+        );
+        showNotification(
+          "Failed to load cities data from building rules. Please try again later.",
+          "error"
+        );
         setCities([]);
         setLoadError(true);
       })
@@ -656,14 +671,16 @@ function VerificationImage() {
   // Filter pincodes based on selected city
   useEffect(() => {
     if (formData.city && cities.length > 0) {
-      const selectedCityData = cities.find(city => city.name === formData.city);
+      const selectedCityData = cities.find(
+        (city) => city.name === formData.city
+      );
       if (selectedCityData) {
         setAvailablePincodes(selectedCityData.pincodes);
       } else {
         setAvailablePincodes([]);
       }
       // Reset pincode when city changes
-      setFormData(prev => ({ ...prev, pincode: "" }));
+      setFormData((prev) => ({ ...prev, pincode: "" }));
     } else {
       setAvailablePincodes([]);
     }
@@ -675,32 +692,39 @@ function VerificationImage() {
       const images = result.data?.data || [];
       if (images.length > 0) {
         const latestFile = images[images.length - 1];
-        
+
         // Create an updated latestImage object with city and pincode
         const updatedLatestImage = {
           ...latestFile,
           // If latestFile doesn't have city/pincode but we had them in state, preserve them
-          city: latestFile.city || (latestImage?.city || null),
-          pincode: latestFile.pincode || (latestImage?.pincode || null),
+          city: latestFile.city || latestImage?.city || null,
+          pincode: latestFile.pincode || latestImage?.pincode || null,
           // Handle scale information
           scale_value: latestFile.scale_value || formData.scale_value || "1",
           scale_unit: latestFile.scale_unit || formData.scale_unit || "inch",
           scale_equals: latestFile.scale_equals || formData.scale_equals || "1",
-          scale_equals_unit: latestFile.scale_equals_unit || formData.scale_equals_unit || "feet"
+          scale_equals_unit:
+            latestFile.scale_equals_unit ||
+            formData.scale_equals_unit ||
+            "feet",
         };
-        
+
         setLatestImage(updatedLatestImage);
         setPdfPreviewUrl(`http://localhost:8080/files/${latestFile.pdf}`);
-        
-        console.log('Latest PDF loaded with location and scale:', updatedLatestImage);
-        
+
+        console.log(
+          "Latest PDF loaded with location and scale:",
+          updatedLatestImage
+        );
+
         // Update form data with the scale from the latest file
-        setFormData(prev => ({
+        setFormData((prev) => ({
           ...prev,
           scale_value: updatedLatestImage.scale_value || prev.scale_value,
           scale_unit: updatedLatestImage.scale_unit || prev.scale_unit,
           scale_equals: updatedLatestImage.scale_equals || prev.scale_equals,
-          scale_equals_unit: updatedLatestImage.scale_equals_unit || prev.scale_equals_unit
+          scale_equals_unit:
+            updatedLatestImage.scale_equals_unit || prev.scale_equals_unit,
         }));
       } else {
         setLatestImage(null);
@@ -714,25 +738,42 @@ function VerificationImage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.file || !formData.residentialType || !formData.city || !formData.pincode) {
-      showNotification("Please select a file, residential type, city and pincode.", "error");
+    if (
+      !formData.file ||
+      !formData.residentialType ||
+      !formData.city ||
+      !formData.pincode
+    ) {
+      showNotification(
+        "Please select a file, residential type, city and pincode.",
+        "error"
+      );
       return;
     }
 
     // Validate if selected city and pincode combination is valid
-    const selectedCity = cities.find(city => city.name === formData.city);
+    const selectedCity = cities.find((city) => city.name === formData.city);
     if (!selectedCity) {
-      showNotification("Selected city is not valid. Please select from the dropdown.", "error");
+      showNotification(
+        "Selected city is not valid. Please select from the dropdown.",
+        "error"
+      );
       return;
     }
 
     if (!selectedCity.pincodes.includes(formData.pincode)) {
-      showNotification("Selected pincode is not valid for this city. Please select from the dropdown.", "error");
+      showNotification(
+        "Selected pincode is not valid for this city. Please select from the dropdown.",
+        "error"
+      );
       return;
     }
 
     // Validate scale values
-    if (parseFloat(formData.scale_value) <= 0 || parseFloat(formData.scale_equals) <= 0) {
+    if (
+      parseFloat(formData.scale_value) <= 0 ||
+      parseFloat(formData.scale_equals) <= 0
+    ) {
       showNotification("Scale values must be greater than zero.", "error");
       return;
     }
@@ -743,7 +784,7 @@ function VerificationImage() {
     data.append("file", formData.file);
     data.append("city", formData.city);
     data.append("pincode", formData.pincode);
-    
+
     // Add scale information to the form data
     data.append("scale_value", formData.scale_value);
     data.append("scale_unit", formData.scale_unit);
@@ -751,9 +792,13 @@ function VerificationImage() {
     data.append("scale_equals_unit", formData.scale_equals_unit);
 
     try {
-      console.log(`Uploading plan for city: ${formData.city}, pincode: ${formData.pincode}`);
-      console.log(`Using scale: ${formData.scale_value} ${formData.scale_unit} = ${formData.scale_equals} ${formData.scale_equals_unit}`);
-      
+      console.log(
+        `Uploading plan for city: ${formData.city}, pincode: ${formData.pincode}`
+      );
+      console.log(
+        `Using scale: ${formData.scale_value} ${formData.scale_unit} = ${formData.scale_equals} ${formData.scale_equals_unit}`
+      );
+
       const result = await axios.post(
         "http://localhost:8080/upload-files",
         data,
@@ -764,7 +809,9 @@ function VerificationImage() {
         showNotification("File uploaded successfully!");
 
         setPdfPreviewUrl(`http://localhost:8080/files/${result.data.filePath}`);
-        setLatestImage({
+        
+        // Store all form data including scale information in latestImage
+        const updatedLatestImage = {
           title: formData.residentialType,
           city: formData.city,
           pincode: formData.pincode,
@@ -772,18 +819,21 @@ function VerificationImage() {
           scale_value: formData.scale_value,
           scale_unit: formData.scale_unit,
           scale_equals: formData.scale_equals,
-          scale_equals_unit: formData.scale_equals_unit
-        });
+          scale_equals_unit: formData.scale_equals_unit,
+        };
+        
+        setLatestImage(updatedLatestImage);
+        console.log("Updated latestImage with all form data:", updatedLatestImage);
 
-        setFormData({ 
-          residentialType: "", 
-          city: "", 
-          pincode: "", 
+        setFormData({
+          residentialType: "",
+          city: "",
+          pincode: "",
           file: null,
           scale_value: formData.scale_value,
           scale_unit: formData.scale_unit,
           scale_equals: formData.scale_equals,
-          scale_equals_unit: formData.scale_equals_unit
+          scale_equals_unit: formData.scale_equals_unit,
         });
       }
     } catch (error) {
@@ -802,15 +852,26 @@ function VerificationImage() {
 
     // Check if there's city and pincode data
     if (!latestImage.city || !latestImage.pincode) {
-      showNotification("City and pincode information missing. Please reupload with location details.", "error");
+      showNotification(
+        "City and pincode information missing. Please reupload with location details.",
+        "error"
+      );
       return;
     }
 
     setIsVerifying(true);
     try {
-      console.log(`Verifying plan for city: ${latestImage.city}, pincode: ${latestImage.pincode}`);
-      console.log(`Using scale: ${formData.scale_value} ${formData.scale_unit} = ${formData.scale_equals} ${formData.scale_equals_unit}`);
-      
+      console.log(
+        `Verifying plan for city: ${latestImage.city}, pincode: ${latestImage.pincode}`
+      );
+      console.log(
+        `Using scale: ${latestImage.scale_value || formData.scale_value} ${
+          latestImage.scale_unit || formData.scale_unit
+        } = ${latestImage.scale_equals || formData.scale_equals} ${
+          latestImage.scale_equals_unit || formData.scale_equals_unit
+        }`
+      );
+
       const response = await axios.get(
         `http://localhost:8080/files/${latestImage.pdf}`,
         { responseType: "blob" }
@@ -824,12 +885,24 @@ function VerificationImage() {
       verificationFormData.append("file", file);
       verificationFormData.append("city", latestImage.city);
       verificationFormData.append("pincode", latestImage.pincode);
-      
-      // Add scale information
-      verificationFormData.append("scale_value", formData.scale_value);
-      verificationFormData.append("scale_unit", formData.scale_unit);
-      verificationFormData.append("scale_equals", formData.scale_equals);
-      verificationFormData.append("scale_equals_unit", formData.scale_equals_unit);
+
+      // Add scale information - prefer latestImage values with fallback to formData
+      verificationFormData.append("scale_value", latestImage.scale_value || formData.scale_value);
+      verificationFormData.append("scale_unit", latestImage.scale_unit || formData.scale_unit);
+      verificationFormData.append("scale_equals", latestImage.scale_equals || formData.scale_equals);
+      verificationFormData.append(
+        "scale_equals_unit",
+        latestImage.scale_equals_unit || formData.scale_equals_unit
+      );
+
+      console.log("Sending data to verification endpoint:", {
+        city: latestImage.city,
+        pincode: latestImage.pincode,
+        scale_value: latestImage.scale_value || formData.scale_value,
+        scale_unit: latestImage.scale_unit || formData.scale_unit,
+        scale_equals: latestImage.scale_equals || formData.scale_equals,
+        scale_equals_unit: latestImage.scale_equals_unit || formData.scale_equals_unit
+      });
 
       const verificationResponse = await axios.post(
         "http://127.0.0.1:5000/verify-pdf",
@@ -838,7 +911,7 @@ function VerificationImage() {
       );
 
       setVerificationResult(verificationResponse.data);
-      
+
       // Save to verification history if user is logged in
       if (isUserLoggedIn()) {
         try {
@@ -849,15 +922,18 @@ function VerificationImage() {
               type: latestImage.title, // Using the same value for type
               city: latestImage.city || "Unknown",
               pincode: latestImage.pincode || "Unknown",
-              status: verificationResponse.data.some(item => item.status === "Non-Compliant") ? 
-                "Non-Compliant" : "Compliant",
+              status: verificationResponse.data.some(
+                (item) => item.status === "Non-Compliant"
+              )
+                ? "Non-Compliant"
+                : "Compliant",
               pdfUrl: `http://localhost:8080/files/${latestImage.pdf}`,
-              results: verificationResponse.data
+              results: verificationResponse.data,
             },
             {
               headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-              }
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
             }
           );
           console.log("Verification saved to history");
@@ -868,7 +944,7 @@ function VerificationImage() {
       } else {
         console.log("User not logged in, skipping history save");
       }
-      
+
       setIsModalOpen(true);
     } catch (error) {
       console.error("Error verifying file:", error);
@@ -880,13 +956,15 @@ function VerificationImage() {
 
   return (
     <>
-        <Navbar />
+      <Navbar />
       <PageContainer>
         <PageHeader>
           <PageTitle>
             <FaFileAlt /> Construction Plan Verification
           </PageTitle>
-          <PageSubtitle>Upload and verify building plans for compliance</PageSubtitle>
+          <PageSubtitle>
+            Upload and verify building plans for compliance
+          </PageSubtitle>
         </PageHeader>
 
         {notification && (
@@ -914,12 +992,12 @@ function VerificationImage() {
                   <StepNumber>1</StepNumber> Upload PDF Plan
                 </Label>
                 <FileInput>
-            <input
-              type="file"
-              name="file"
-              accept=".pdf"
-              onChange={handleFileChange}
-            />
+                  <input
+                    type="file"
+                    name="file"
+                    accept=".pdf"
+                    onChange={handleFileChange}
+                  />
                   <FileInputPreview>
                     <FaCloudUploadAlt />
                     <p>
@@ -935,23 +1013,25 @@ function VerificationImage() {
                   <StepNumber>2</StepNumber> Select Residential Type
                 </Label>
                 <Select
-              name="residentialType"
-              value={formData.residentialType}
+                  name="residentialType"
+                  value={formData.residentialType}
                   onChange={handleChange}
-              required
-            >
-              <option value="">Select an option</option>
-              {Object.entries(residentialTypeOptions).map(([key, value]) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
+                  required
+                >
+                  <option value="">Select an option</option>
+                  {Object.entries(residentialTypeOptions).map(
+                    ([key, value]) => (
+                      <option key={key} value={key}>
+                        {value}
+                      </option>
+                    )
+                  )}
                 </Select>
               </FormGroup>
 
               <FormGroup>
                 <Label>
-                  <StepNumber>3</StepNumber> 
+                  <StepNumber>3</StepNumber>
                   <FaMapMarkerAlt /> Select City (from Building Rules)
                 </Label>
                 <Select
@@ -962,9 +1042,13 @@ function VerificationImage() {
                   disabled={isLoading}
                 >
                   {isLoading ? (
-                    <option value="">Loading cities from rules database...</option>
+                    <option value="">
+                      Loading cities from rules database...
+                    </option>
                   ) : cities.length === 0 ? (
-                    <option value="">No cities available in rules database</option>
+                    <option value="">
+                      No cities available in rules database
+                    </option>
                   ) : (
                     <>
                       <option value="">Select a city</option>
@@ -976,31 +1060,44 @@ function VerificationImage() {
                     </>
                   )}
                 </Select>
-                <div style={{ fontSize: '0.8rem', marginTop: '0.25rem', color: '#4b5563' }}>
-                  Cities and pincodes are loaded from the building rules database to ensure verification uses the correct rules.
+                <div
+                  style={{
+                    fontSize: "0.8rem",
+                    marginTop: "0.25rem",
+                    color: "#4b5563",
+                  }}
+                >
+                  Cities and pincodes are loaded from the building rules
+                  database to ensure verification uses the correct rules.
                 </div>
                 {cities.length === 0 && !isLoading && (
-                  <div style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '0.25rem' }}>
+                  <div
+                    style={{
+                      color: "#dc2626",
+                      fontSize: "0.8rem",
+                      marginTop: "0.25rem",
+                    }}
+                  >
                     No cities found in building rules database.
                     {loadError && (
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.preventDefault();
                           fetchCitiesAndPincodes();
                         }}
                         style={{
-                          marginLeft: '0.5rem',
-                          color: '#1a2a6c',
-                          border: 'none',
-                          background: 'none',
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
+                          marginLeft: "0.5rem",
+                          color: "#1a2a6c",
+                          border: "none",
+                          background: "none",
+                          textDecoration: "underline",
+                          cursor: "pointer",
                           padding: 0,
-                          fontSize: '0.8rem'
+                          fontSize: "0.8rem",
                         }}
                       >
                         Try again
-          </button>
+                      </button>
                     )}
                   </div>
                 )}
@@ -1015,18 +1112,28 @@ function VerificationImage() {
                   name="pincode"
                   value={formData.pincode}
                   onChange={handleChange}
-                  disabled={!formData.city || availablePincodes.length === 0 || isLoading}
+                  disabled={
+                    !formData.city ||
+                    availablePincodes.length === 0 ||
+                    isLoading
+                  }
                   required
-                  style={!formData.city ? { 
-                    opacity: 0.6, 
-                    cursor: 'not-allowed',
-                    background: '#f5f5f5' 
-                  } : {}}
+                  style={
+                    !formData.city
+                      ? {
+                          opacity: 0.6,
+                          cursor: "not-allowed",
+                          background: "#f5f5f5",
+                        }
+                      : {}
+                  }
                 >
                   {!formData.city ? (
                     <option value="">Select a city first</option>
                   ) : availablePincodes.length === 0 ? (
-                    <option value="">No pincodes available for this city</option>
+                    <option value="">
+                      No pincodes available for this city
+                    </option>
                   ) : (
                     <>
                       <option value="">Select a pincode</option>
@@ -1038,11 +1145,19 @@ function VerificationImage() {
                     </>
                   )}
                 </Select>
-                {formData.city && availablePincodes.length === 0 && !isLoading && (
-                  <div style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '0.25rem' }}>
-                    No pincodes found for selected city in building rules.
-                  </div>
-                )}
+                {formData.city &&
+                  availablePincodes.length === 0 &&
+                  !isLoading && (
+                    <div
+                      style={{
+                        color: "#dc2626",
+                        fontSize: "0.8rem",
+                        marginTop: "0.25rem",
+                      }}
+                    >
+                      No pincodes found for selected city in building rules.
+                    </div>
+                  )}
               </FormGroup>
 
               <FormGroup>
@@ -1050,7 +1165,13 @@ function VerificationImage() {
                   <StepNumber>5</StepNumber>
                   <FaRuler /> Plan Scale
                 </Label>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.4rem",
+                  }}
+                >
                   <input
                     type="number"
                     name="scale_value"
@@ -1058,24 +1179,24 @@ function VerificationImage() {
                     onChange={handleChange}
                     min="0.1"
                     step="0.1"
-                    style={{ 
-                      width: '50px',
-                      padding: '0.6rem 0.4rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
+                    style={{
+                      width: "50px",
+                      padding: "0.6rem 0.4rem",
+                      border: "1px solid #d1d5db",
+                      borderRadius: "6px",
                     }}
                   />
                   <Select
                     name="scale_unit"
                     value={formData.scale_unit}
                     onChange={handleChange}
-                    style={{ flex: '1' }}
+                    style={{ flex: "1" }}
                   >
                     <option value="inch">inch</option>
                     <option value="cm">cm</option>
                     <option value="mm">mm</option>
                   </Select>
-                  <span style={{ margin: '0 0.4rem' }}>=</span>
+                  <span style={{ margin: "0 0.4rem" }}>=</span>
                   <input
                     type="number"
                     name="scale_equals"
@@ -1083,25 +1204,32 @@ function VerificationImage() {
                     onChange={handleChange}
                     min="0.1"
                     step="0.1"
-                    style={{ 
-                      width: '50px',
-                      padding: '0.6rem 0.4rem',
-                      border: '1px solid #d1d5db',
-                      borderRadius: '6px',
+                    style={{
+                      width: "50px",
+                      padding: "0.6rem 0.4rem",
+                      border: "1px solid #d1d5db",
+                      borderRadius: "6px",
                     }}
                   />
                   <Select
                     name="scale_equals_unit"
                     value={formData.scale_equals_unit}
                     onChange={handleChange}
-                    style={{ flex: '1' }}
+                    style={{ flex: "1" }}
                   >
                     <option value="feet">feet</option>
                     <option value="meters">meters</option>
                   </Select>
                 </div>
-                <div style={{ fontSize: '0.75rem', marginTop: '0.25rem', color: '#4b5563' }}>
-                  Specify the scale of your construction plan (e.g., 1 inch = 5 feet)
+                <div
+                  style={{
+                    fontSize: "0.75rem",
+                    marginTop: "0.25rem",
+                    color: "#4b5563",
+                  }}
+                >
+                  Specify the scale of your construction plan (e.g., 1 inch = 5
+                  feet)
                 </div>
               </FormGroup>
 
@@ -1109,10 +1237,16 @@ function VerificationImage() {
                 {isUploading ? "Uploading..." : "Upload Plan"}
                 {!isUploading && <FaArrowRight />}
               </SubmitButton>
-              
+
               {!isUserLoggedIn() && (
                 <div style={{ marginTop: "1.5rem", textAlign: "center" }}>
-                  <p style={{ color: "#6b7280", fontSize: "0.9rem", marginBottom: "0.75rem" }}>
+                  <p
+                    style={{
+                      color: "#6b7280",
+                      fontSize: "0.9rem",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
                     Login to save your verification history
                   </p>
                   <LoginLink href="/login">
@@ -1132,47 +1266,54 @@ function VerificationImage() {
 
             <PreviewContainer>
               <PDFPreviewContainer>
-            {pdfPreviewUrl ? (
+                {pdfPreviewUrl ? (
                   <>
                     <PDFPreviewTitle>
                       <FaBuilding />
-                  {latestImage?.title
-                    ? residentialTypeOptions[latestImage.title] ||
-                      latestImage.title
-                    : "Uploaded PDF"}
+                      {latestImage?.title
+                        ? residentialTypeOptions[latestImage.title] ||
+                          latestImage.title
+                        : "Uploaded PDF"}
                       {latestImage?.city && latestImage?.pincode && (
-                        <span style={{ 
-                          fontSize: "0.8rem", 
-                          marginLeft: "0.5rem", 
-                          backgroundColor: "rgba(26, 42, 108, 0.1)",
-                          color: "#1a2a6c", 
-                          padding: "0.2rem 0.4rem",
-                          borderRadius: "4px",
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "0.2rem"
-                        }}>
-                          <FaMapMarkerAlt size={10} /> {latestImage.city}, {latestImage.pincode}
+                        <span
+                          style={{
+                            fontSize: "0.8rem",
+                            marginLeft: "0.5rem",
+                            backgroundColor: "rgba(26, 42, 108, 0.1)",
+                            color: "#1a2a6c",
+                            padding: "0.2rem 0.4rem",
+                            borderRadius: "4px",
+                            display: "inline-flex",
+                            alignItems: "center",
+                            gap: "0.2rem",
+                          }}
+                        >
+                          <FaMapMarkerAlt size={10} /> {latestImage.city},{" "}
+                          {latestImage.pincode}
                         </span>
                       )}
                     </PDFPreviewTitle>
-                    
-                    {latestImage?.scale_value && latestImage?.scale_unit && latestImage?.scale_equals && latestImage?.scale_equals_unit && (
-                      <div style={{ 
-                        fontSize: "0.75rem", 
-                        marginBottom: "0.5rem", 
-                        color: "#4b5563",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.2rem"
-                      }}>
-                        <FaRuler size={10} /> Scale: {latestImage.scale_value} {latestImage.scale_unit} = {latestImage.scale_equals} {latestImage.scale_equals_unit}
-                      </div>
-                    )}
-                    <PDFViewer
-                  src={pdfPreviewUrl}
-                  title="PDF Preview"
-                    />
+
+                    {latestImage?.scale_value &&
+                      latestImage?.scale_unit &&
+                      latestImage?.scale_equals &&
+                      latestImage?.scale_equals_unit && (
+                        <div
+                          style={{
+                            fontSize: "0.75rem",
+                            marginBottom: "0.5rem",
+                            color: "#4b5563",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.2rem",
+                          }}
+                        >
+                          <FaRuler size={10} /> Scale: {latestImage.scale_value}{" "}
+                          {latestImage.scale_unit} = {latestImage.scale_equals}{" "}
+                          {latestImage.scale_equals_unit}
+                        </div>
+                      )}
+                    <PDFViewer src={pdfPreviewUrl} title="PDF Preview" />
                   </>
                 ) : (
                   <EmptyState>
@@ -1200,7 +1341,9 @@ function VerificationImage() {
                 <ModalTitle>
                   <FaCheckCircle /> Verification Results
                 </ModalTitle>
-                <CloseButton onClick={() => setIsModalOpen(false)}>×</CloseButton>
+                <CloseButton onClick={() => setIsModalOpen(false)}>
+                  ×
+                </CloseButton>
               </ModalHeader>
 
               <ResultsGrid>
@@ -1236,7 +1379,8 @@ function VerificationImage() {
                       </Metric>
                       <Metric>
                         <MetricLabel>
-                          <FaRuler style={{ transform: 'rotate(90deg)' }} /> Width
+                          <FaRuler style={{ transform: "rotate(90deg)" }} />{" "}
+                          Width
                         </MetricLabel>
                         <MetricValue>{item.width}</MetricValue>
                       </Metric>

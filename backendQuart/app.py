@@ -40,6 +40,12 @@ def get_room_type_from_color(rgb):
     rounded_rgb = tuple(round(c, 2) for c in rgb)
     return color_map.get(rounded_rgb)
 
+def is_black_color(rgb):
+    # Check if the color is black or very close to black
+    # Using a small threshold to account for minor variations
+    threshold = 0.1
+    return all(c <= threshold for c in rgb)
+
 def extract_shapes_from_pdf(pdf_path):
     shapes_data = []
     try:
@@ -54,6 +60,10 @@ def extract_shapes_from_pdf(pdf_path):
                 fill_color = shape.get("fill")
 
                 if bbox and fill_color:
+                    # Skip black colored shapes
+                    if is_black_color(fill_color):
+                        continue
+                        
                     # Try to map color to room type
                     room_type = get_room_type_from_color(fill_color)
                     if room_type:
@@ -101,6 +111,36 @@ async def health_check():
 @app.route('/verify-pdf', methods=['POST'])
 async def verify_pdf():
     try:
+        form = await request.form
+        
+        # Get city, pincode and scale information from form data
+        city = form.get('city')
+        pincode = form.get('pincode')
+        scale_value = form.get('scale_value')
+        scale_unit = form.get('scale_unit')
+        scale_equals = form.get('scale_equals')
+        scale_equals_unit = form.get('scale_equals_unit')
+        
+        # Validate required fields
+        if not all([city, pincode, scale_value, scale_unit, scale_equals, scale_equals_unit]):
+            return jsonify({
+                "status": "error",
+                "message": "Missing required fields: city, pincode, and scale information are required"
+            }), 400
+
+        # Validate scale values are numeric and positive
+        try:
+            if float(scale_value) <= 0 or float(scale_equals) <= 0:
+                return jsonify({
+                    "status": "error",
+                    "message": "Scale values must be positive numbers"
+                }), 400
+        except ValueError:
+            return jsonify({
+                "status": "error",
+                "message": "Invalid scale values"
+            }), 400
+
         # Check if file is present in request
         if 'file' not in (await request.files):
             return jsonify({
@@ -129,6 +169,8 @@ async def verify_pdf():
         await file.save(file_path)
         
         logger.info(f"Processing file: {file.filename}")
+        logger.info(f"Location: {city}-{pincode}")
+        logger.info(f"Scale: {scale_value}{scale_unit} = {scale_equals}{scale_equals_unit}")
         
         # Extract shapes from the PDF
         shapes_data = extract_shapes_from_pdf(file_path)
@@ -151,14 +193,26 @@ async def verify_pdf():
         # Clean up the temporary file
         os.remove(file_path)
         
-        logger.info(f"Successfully processed {len(shapes_data)} shapes from {file.filename}")
+        logger.info(f"Successfully processed {len(shapes_data)} shapes for {city}-{pincode}")
         
         return jsonify({
             "status": "success",
             "message": f"Successfully extracted {len(shapes_data)} shapes",
             "filename": file.filename,
+            "city": city,
+            "pincode": pincode,
+            "scale": {
+                "value": scale_value,
+                "unit": scale_unit,
+                "equals": scale_equals,
+                "equals_unit": scale_equals_unit
+            },
             "shapes": shapes_data,
-            "room_counts": room_counts
+            "room_counts": room_counts,
+            "location": {
+                "city": city,
+                "pincode": pincode
+            }
         }), 200
         
     except Exception as e:

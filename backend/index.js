@@ -23,12 +23,14 @@ const app = express();
 const PORT = process.env.PORT || 8081;
 
 // CORS configuration
-app.use(cors({
-  origin: 'http://localhost:3000',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Body parser middleware
 app.use(bodyParser.json());
@@ -76,29 +78,29 @@ app.post("/upload-files", upload.single("file"), async (req, res) => {
     });
   }
 
-  const { 
-    title, 
-    city, 
-    pincode, 
-    scale_value, 
-    scale_unit, 
-    scale_equals, 
-    scale_equals_unit 
+  const {
+    title,
+    city,
+    pincode,
+    scale_value,
+    scale_unit,
+    scale_equals,
+    scale_equals_unit,
   } = req.body;
-  
+
   const fileName = req.file.filename;
 
   try {
     // Store file details in the database
-    const pdfEntry = await PdfDetails.create({ 
-      title, 
+    const pdfEntry = await PdfDetails.create({
+      title,
       pdf: fileName,
       city: city || null,
       pincode: pincode || null,
       scale_value: scale_value || "1",
       scale_unit: scale_unit || "inch",
       scale_equals: scale_equals || "1",
-      scale_equals_unit: scale_equals_unit || "feet"
+      scale_equals_unit: scale_equals_unit || "feet",
     });
 
     res.json({
