@@ -1,36 +1,21 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const authenticateToken = require("../Middlewares/AuthMiddleware");
-const Verification = require("../models/Verification");
+const verificationHistoryController = require('../Controllers/VerificationHistoryController');
+const authMiddleware = require('../Middlewares/authMiddleware');
 
-// Get verification history
-router.get("/verifications", authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const verifications = await Verification.find({ userId }).sort({
-      submissionDate: -1,
-    });
-    res.json(verifications);
-  } catch (error) {
-    console.error("Error fetching verifications:", error);
-    res.status(500).json({ error: "Failed to fetch verification history" });
-  }
-});
+// All routes are protected and require authentication
+router.use(authMiddleware);
 
-// Save verification result
-router.post("/save-verification", authenticateToken, async (req, res) => {
-  try {
-    const verification = new Verification({
-      userId: req.user.id,
-      ...req.body,
-      submissionDate: new Date(),
-    });
-    await verification.save();
-    res.json({ success: true, verification });
-  } catch (error) {
-    console.error("Error saving verification:", error);
-    res.status(500).json({ error: "Failed to save verification" });
-  }
-});
+// Get all verifications for the logged-in user
+router.get('/verifications', verificationHistoryController.getUserVerifications);
 
-module.exports = router;
+// Get a single verification by ID
+router.get('/verifications/:id', verificationHistoryController.getVerificationById);
+
+// Save a new verification
+router.post('/save-verification', verificationHistoryController.saveVerification);
+
+// Delete a verification
+router.delete('/verifications/:id', verificationHistoryController.deleteVerification);
+
+module.exports = router; 
