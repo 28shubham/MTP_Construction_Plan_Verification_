@@ -1,50 +1,89 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { FaEdit, FaTrash, FaUserShield, FaCheckCircle, FaTimesCircle, FaPlus } from 'react-icons/fa';
+import { FaEdit, FaTrash, FaUserShield, FaCheckCircle, FaPlus, FaSearch } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import { getAllAdmins, deleteAdmin, updateAdmin, registerAdmin } from '../services/adminService';
-import { useNavigate } from 'react-router-dom';
+import AdminDashboardLayout from '../components/AdminDashboardLayout';
 
-const PageContainer = styled.div`
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+const PageContent = styled.div`
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
 `;
 
 const Header = styled.div`
+  background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);
+  color: white;
+  padding: 2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
 `;
 
 const Title = styled.h1`
-  color: #1f2937;
+  margin: 0;
   display: flex;
   align-items: center;
   gap: 1rem;
   font-size: 1.875rem;
+  font-weight: 600;
 
   svg {
-    color: #1a2a6c;
+    font-size: 2rem;
+  }
+`;
+
+const SearchBar = styled.div`
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  margin: 0 2rem;
+  flex: 1;
+  max-width: 400px;
+
+  svg {
+    color: rgba(255, 255, 255, 0.7);
+    margin-right: 0.5rem;
+  }
+
+  input {
+    background: none;
+    border: none;
+    color: white;
+    width: 100%;
+    padding: 0.5rem;
+    
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    &:focus {
+      outline: none;
+    }
   }
 `;
 
 const AddButton = styled.button`
-  background: #1a2a6c;
+  background: #4CAF50;
   color: white;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: opacity 0.2s;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
   &:hover {
-    opacity: 0.9;
+    background: #43A047;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   }
 
   svg {
@@ -52,40 +91,67 @@ const AddButton = styled.button`
   }
 `;
 
+const TableContainer = styled.div`
+  padding: 2rem;
+  overflow-x: auto;
+`;
+
 const Table = styled.table`
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate;
+  border-spacing: 0;
   background: white;
-  border-radius: 8px;
-  overflow: hidden;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 `;
 
 const Th = styled.th`
   text-align: left;
-  padding: 1rem;
-  background: #f3f4f6;
-  color: #374151;
+  padding: 1.25rem 1rem;
+  background: #f8fafc;
+  color: #1a2a6c;
   font-weight: 600;
-  border-bottom: 2px solid #e5e7eb;
+  border-bottom: 2px solid #e2e8f0;
+  white-space: nowrap;
+
+  &:first-child {
+    border-top-left-radius: 8px;
+  }
+
+  &:last-child {
+    border-top-right-radius: 8px;
+  }
 `;
 
 const Td = styled.td`
-  padding: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  color: #4b5563;
+  padding: 1.25rem 1rem;
+  border-bottom: 1px solid #e2e8f0;
+  color: #4a5568;
+  transition: background-color 0.2s;
+
+  ${({ isFirst }) => isFirst && `
+    font-weight: 500;
+    color: #2d3748;
+  `}
+`;
+
+const Tr = styled.tr`
+  &:hover td {
+    background-color: #f8fafc;
+  }
 `;
 
 const ActionButton = styled.button`
   padding: 0.5rem;
   border: none;
-  background: none;
+  background: ${props => props.delete ? 'rgba(220, 38, 38, 0.1)' : 'rgba(26, 42, 108, 0.1)'};
   color: ${props => props.delete ? '#dc2626' : '#1a2a6c'};
+  border-radius: 6px;
   cursor: pointer;
-  transition: opacity 0.2s;
+  transition: all 0.2s;
+  margin-right: 0.5rem;
 
   &:hover {
-    opacity: 0.7;
+    background: ${props => props.delete ? 'rgba(220, 38, 38, 0.2)' : 'rgba(26, 42, 108, 0.2)'};
+    transform: translateY(-1px);
   }
 
   svg {
@@ -109,10 +175,17 @@ const Modal = styled.div`
 const ModalContent = styled.div`
   background: white;
   padding: 2rem;
-  border-radius: 8px;
+  border-radius: 12px;
   width: 100%;
   max-width: 500px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  position: relative;
+  
+  h2 {
+    margin: 0 0 1.5rem;
+    color: #1a2a6c;
+    font-size: 1.5rem;
+  }
 `;
 
 const FormGroup = styled.div`
@@ -122,51 +195,54 @@ const FormGroup = styled.div`
 const Label = styled.label`
   display: block;
   margin-bottom: 0.5rem;
-  color: #374151;
-  font-weight: 600;
+  color: #4a5568;
+  font-weight: 500;
 `;
 
 const Input = styled.input`
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  margin-bottom: 1rem;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: all 0.2s;
 
   &:focus {
     outline: none;
     border-color: #1a2a6c;
-    box-shadow: 0 0 0 2px rgba(26, 42, 108, 0.1);
+    box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
   }
 `;
 
-const Select = styled.select`
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  margin-bottom: 1rem;
-
-  &:focus {
-    outline: none;
-    border-color: #1a2a6c;
-    box-shadow: 0 0 0 2px rgba(26, 42, 108, 0.1);
-  }
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
 `;
 
 const Button = styled.button`
-  background: ${props => props.secondary ? '#f3f4f6' : '#1a2a6c'};
-  color: ${props => props.secondary ? '#374151' : 'white'};
+  flex: 1;
   padding: 0.75rem 1.5rem;
   border: none;
-  border-radius: 6px;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  margin-right: 1rem;
+  transition: all 0.2s;
 
-  &:hover {
-    opacity: 0.9;
-  }
+  ${props => props.primary ? `
+    background: #1a2a6c;
+    color: white;
+    
+    &:hover {
+      background: #151f4d;
+    }
+  ` : `
+    background: #f1f5f9;
+    color: #64748b;
+    
+    &:hover {
+      background: #e2e8f0;
+    }
+  `}
 `;
 
 const AdminListPage = () => {
@@ -174,7 +250,7 @@ const AdminListPage = () => {
   const [editingAdmin, setEditingAdmin] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(true);
-  const navigate = useNavigate();
+  const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchAdmins();
@@ -208,7 +284,7 @@ const AdminListPage = () => {
   const handleEdit = (admin) => {
     setEditingAdmin({
       ...admin,
-      password: '' // Clear password for security
+      password: ''
     });
     setIsModalOpen(true);
   };
@@ -227,7 +303,6 @@ const AdminListPage = () => {
     e.preventDefault();
     try {
       if (editingAdmin._id) {
-        // Update existing admin
         const { _id, ...updateData } = editingAdmin;
         if (!updateData.password) {
           delete updateData.password;
@@ -238,7 +313,6 @@ const AdminListPage = () => {
         ));
         toast.success('Admin updated successfully');
       } else {
-        // Create new admin
         const response = await registerAdmin(editingAdmin);
         setAdmins([...admins, response.data]);
         toast.success('Admin created successfully');
@@ -250,64 +324,81 @@ const AdminListPage = () => {
     }
   };
 
-  const handleCancel = () => {
-    setIsModalOpen(false);
-    setEditingAdmin(null);
-  };
+  const filteredAdmins = admins.filter(admin => 
+    admin.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    admin.email.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <AdminDashboardLayout>
+        <div style={{ padding: '2rem', textAlign: 'center' }}>Loading...</div>
+      </AdminDashboardLayout>
+    );
   }
 
   return (
-    <PageContainer>
-      <Header>
-        <Title>
-          <FaUserShield />
-          Admin Management
-        </Title>
-        <AddButton onClick={handleAdd}>
-          <FaPlus />
-          Add Admin
-        </AddButton>
-      </Header>
+    <AdminDashboardLayout>
+      <PageContent>
+        <Header>
+          <Title>
+            <FaUserShield />
+            Admin Management
+          </Title>
+          <SearchBar>
+            <FaSearch />
+            <input
+              type="text"
+              placeholder="Search admins..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </SearchBar>
+          <AddButton onClick={handleAdd}>
+            <FaPlus />
+            Add Admin
+          </AddButton>
+        </Header>
 
-      <Table>
-        <thead>
-          <tr>
-            <Th>Name</Th>
-            <Th>Email</Th>
-            <Th>Permissions</Th>
-            <Th>Actions</Th>
-          </tr>
-        </thead>
-        <tbody>
-          {admins.map(admin => (
-            <tr key={admin._id}>
-              <Td>{admin.name}</Td>
-              <Td>{admin.email}</Td>
-              <Td>
-                {admin.permissions?.map(permission => (
-                  <div key={permission}>
-                    <FaCheckCircle style={{ color: '#059669', marginRight: '0.5rem' }} />
-                    {permission.split('_').map(word => 
-                      word.charAt(0).toUpperCase() + word.slice(1)
-                    ).join(' ')}
-                  </div>
-                ))}
-              </Td>
-              <Td>
-                <ActionButton onClick={() => handleEdit(admin)}>
-                  <FaEdit />
-                </ActionButton>
-                <ActionButton delete onClick={() => handleDelete(admin._id)}>
-                  <FaTrash />
-                </ActionButton>
-              </Td>
-            </tr>
-          ))}
-        </tbody>
-      </Table>
+        <TableContainer>
+          <Table>
+            <thead>
+              <tr>
+                <Th>Name</Th>
+                <Th>Email</Th>
+                <Th>Permissions</Th>
+                <Th>Actions</Th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredAdmins.map(admin => (
+                <Tr key={admin._id}>
+                  <Td isFirst>{admin.name}</Td>
+                  <Td>{admin.email}</Td>
+                  <Td>
+                    {admin.permissions?.map(permission => (
+                      <div key={permission} style={{ display: 'flex', alignItems: 'center', marginBottom: '0.25rem' }}>
+                        <FaCheckCircle style={{ color: '#059669', marginRight: '0.5rem' }} />
+                        {permission.split('_').map(word => 
+                          word.charAt(0).toUpperCase() + word.slice(1)
+                        ).join(' ')}
+                      </div>
+                    ))}
+                  </Td>
+                  <Td>
+                    <ActionButton onClick={() => handleEdit(admin)}>
+                      <FaEdit />
+                    </ActionButton>
+                    <ActionButton delete onClick={() => handleDelete(admin._id)}>
+                      <FaTrash />
+                    </ActionButton>
+                  </Td>
+                </Tr>
+              ))}
+            </tbody>
+          </Table>
+        </TableContainer>
+      </PageContent>
 
       {isModalOpen && (
         <Modal>
@@ -321,6 +412,7 @@ const AdminListPage = () => {
                   value={editingAdmin.name}
                   onChange={e => setEditingAdmin({...editingAdmin, name: e.target.value})}
                   required
+                  placeholder="Enter admin name"
                 />
               </FormGroup>
 
@@ -331,6 +423,7 @@ const AdminListPage = () => {
                   value={editingAdmin.email}
                   onChange={e => setEditingAdmin({...editingAdmin, email: e.target.value})}
                   required
+                  placeholder="Enter admin email"
                 />
               </FormGroup>
 
@@ -342,18 +435,23 @@ const AdminListPage = () => {
                   onChange={e => setEditingAdmin({...editingAdmin, password: e.target.value})}
                   required={!editingAdmin._id}
                   minLength="3"
+                  placeholder={editingAdmin._id ? 'Enter new password (optional)' : 'Enter password'}
                 />
               </FormGroup>
 
-              <Button type="submit">Save Changes</Button>
-              <Button type="button" secondary onClick={handleCancel}>
-                Cancel
-              </Button>
+              <ButtonGroup>
+                <Button type="submit" primary>
+                  {editingAdmin._id ? 'Save Changes' : 'Add Admin'}
+                </Button>
+                <Button type="button" onClick={() => setIsModalOpen(false)}>
+                  Cancel
+                </Button>
+              </ButtonGroup>
             </form>
           </ModalContent>
         </Modal>
       )}
-    </PageContainer>
+    </AdminDashboardLayout>
   );
 };
 

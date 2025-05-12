@@ -352,7 +352,6 @@ const Button = styled.button`
 const AdminVerifications = () => {
   const [verifications, setVerifications] = useState([]);
   const [stats, setStats] = useState({
-    pending: 0,
     approved: 0,
     rejected: 0,
     total: 0
@@ -374,16 +373,6 @@ const AdminVerifications = () => {
       try {
         // Mock data - replace with actual API call
         const mockData = [
-          {
-            id: 1,
-            applicantName: "John Doe",
-            projectTitle: "Residential Villa",
-            submissionDate: "2023-07-15T10:30:00",
-            status: "pending",
-            type: "Residential",
-            location: "123 Main St, Anytown",
-            documentUrl: "#"
-          },
           {
             id: 2,
             applicantName: "Jane Smith",
@@ -415,26 +404,6 @@ const AdminVerifications = () => {
             documentUrl: "#"
           },
           {
-            id: 5,
-            applicantName: "Michael Wilson",
-            projectTitle: "Group Housing Project",
-            submissionDate: "2023-06-28T16:20:00",
-            status: "pending",
-            type: "Group Housing",
-            location: "555 Community Ln, Suburban Heights",
-            documentUrl: "#"
-          },
-          {
-            id: 6,
-            applicantName: "Sarah Garcia",
-            projectTitle: "Residential Independent House",
-            submissionDate: "2023-06-25T13:10:00",
-            status: "pending",
-            type: "Residential Independent",
-            location: "777 Liberty Ave, New Town",
-            documentUrl: "#"
-          },
-          {
             id: 7,
             applicantName: "David Martinez",
             projectTitle: "Studio Apartment Building",
@@ -455,16 +424,6 @@ const AdminVerifications = () => {
             documentUrl: "#"
           },
           {
-            id: 9,
-            applicantName: "Thomas Taylor",
-            projectTitle: "Farmhouse with Pool",
-            submissionDate: "2023-06-10T14:00:00",
-            status: "pending",
-            type: "Farm House",
-            location: "444 Countryside Rd, Rural County",
-            documentUrl: "#"
-          },
-          {
             id: 10,
             applicantName: "Jennifer White",
             projectTitle: "Group Housing Complex",
@@ -473,38 +432,16 @@ const AdminVerifications = () => {
             type: "Group Housing",
             location: "222 Community Circle, Neighborhoodville",
             documentUrl: "#"
-          },
-          {
-            id: 11,
-            applicantName: "Daniel Harris",
-            projectTitle: "Eco-friendly Residence",
-            submissionDate: "2023-06-01T15:45:00",
-            status: "pending",
-            type: "Residential",
-            location: "333 Green St, Eco Park",
-            documentUrl: "#"
-          },
-          {
-            id: 12,
-            applicantName: "Patricia Clark",
-            projectTitle: "Studio Apartment Renovation",
-            submissionDate: "2023-05-28T10:15:00",
-            status: "rejected",
-            type: "Studio Apartment",
-            location: "111 Loft Ave, Arts District",
-            documentUrl: "#"
           }
         ];
         
         setVerifications(mockData);
         
         // Calculate stats
-        const pending = mockData.filter(v => v.status === 'pending').length;
         const approved = mockData.filter(v => v.status === 'approved').length;
         const rejected = mockData.filter(v => v.status === 'rejected').length;
         
         setStats({
-          pending,
           approved,
           rejected,
           total: mockData.length
@@ -550,50 +487,6 @@ const AdminVerifications = () => {
     setShowViewModal(true);
   };
 
-  const handleApprove = (id) => {
-    // In a real app, this would be an API call
-    const updatedVerifications = verifications.map(verification => 
-      verification.id === id ? { ...verification, status: 'approved' } : verification
-    );
-    
-    setVerifications(updatedVerifications);
-    
-    if (selectedVerification?.id === id) {
-      setSelectedVerification({ ...selectedVerification, status: 'approved' });
-    }
-    
-    // Update stats
-    setStats({
-      ...stats,
-      pending: stats.pending - 1,
-      approved: stats.approved + 1
-    });
-    
-    handleSuccess('Verification approved successfully');
-  };
-
-  const handleReject = (id) => {
-    // In a real app, this would be an API call
-    const updatedVerifications = verifications.map(verification => 
-      verification.id === id ? { ...verification, status: 'rejected' } : verification
-    );
-    
-    setVerifications(updatedVerifications);
-    
-    if (selectedVerification?.id === id) {
-      setSelectedVerification({ ...selectedVerification, status: 'rejected' });
-    }
-    
-    // Update stats
-    setStats({
-      ...stats,
-      pending: stats.pending - 1,
-      rejected: stats.rejected + 1
-    });
-    
-    handleSuccess('Verification rejected');
-  };
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
@@ -630,16 +523,6 @@ const AdminVerifications = () => {
         </PageHeader>
 
         <StatsContainer>
-          <StatCard background="#f0f9ff" color="#0c63e4">
-            <StatIcon>
-              <FaHourglass />
-            </StatIcon>
-            <StatContent>
-              <StatValue>{stats.pending}</StatValue>
-              <StatLabel>Pending Verifications</StatLabel>
-            </StatContent>
-          </StatCard>
-          
           <StatCard background="#e6f7ee" color="#00a36a">
             <StatIcon>
               <FaCheckCircle />
@@ -713,7 +596,6 @@ const AdminVerifications = () => {
                     <Status status={verification.status}>
                       {verification.status === 'approved' && <FaCheckCircle style={{ marginRight: '6px' }} />}
                       {verification.status === 'rejected' && <FaTimesCircle style={{ marginRight: '6px' }} />}
-                      {verification.status === 'pending' && <FaHourglass style={{ marginRight: '6px' }} />}
                       {verification.status.charAt(0).toUpperCase() + verification.status.slice(1)}
                     </Status>
                   </TableCell>
@@ -725,24 +607,6 @@ const AdminVerifications = () => {
                       <ActionButton title="Download Document">
                         <FaDownload />
                       </ActionButton>
-                      {verification.status === 'pending' && (
-                        <>
-                          <ActionButton 
-                            title="Approve" 
-                            onClick={() => handleApprove(verification.id)}
-                            style={{ color: '#00a36a' }}
-                          >
-                            <FaCheckCircle />
-                          </ActionButton>
-                          <ActionButton 
-                            title="Reject" 
-                            onClick={() => handleReject(verification.id)}
-                            className="delete"
-                          >
-                            <FaTimesCircle />
-                          </ActionButton>
-                        </>
-                      )}
                     </ActionContainer>
                   </TableCell>
                 </TableRow>
@@ -811,7 +675,6 @@ const AdminVerifications = () => {
                       <Status status={selectedVerification.status} style={{ fontSize: '12px' }}>
                         {selectedVerification.status === 'approved' && <FaCheckCircle style={{ marginRight: '6px' }} />}
                         {selectedVerification.status === 'rejected' && <FaTimesCircle style={{ marginRight: '6px' }} />}
-                        {selectedVerification.status === 'pending' && <FaHourglass style={{ marginRight: '6px' }} />}
                         {selectedVerification.status.charAt(0).toUpperCase() + selectedVerification.status.slice(1)}
                       </Status>
                     </div>
@@ -889,28 +752,6 @@ const AdminVerifications = () => {
               </div>
               
               <ButtonsContainer>
-                {selectedVerification.status === 'pending' && (
-                  <>
-                    <Button 
-                      className="success"
-                      onClick={() => {
-                        handleApprove(selectedVerification.id);
-                        setShowViewModal(false);
-                      }}
-                    >
-                      Approve Verification
-                    </Button>
-                    <Button 
-                      className="danger"
-                      onClick={() => {
-                        handleReject(selectedVerification.id);
-                        setShowViewModal(false);
-                      }}
-                    >
-                      Reject Verification
-                    </Button>
-                  </>
-                )}
                 <Button className="secondary" onClick={() => setShowViewModal(false)}>Close</Button>
               </ButtonsContainer>
             </ModalBody>

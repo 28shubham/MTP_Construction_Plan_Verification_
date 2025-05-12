@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="400" height="300" viewBox="0 0 400 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Smart Verification -->
+  <rect x="50" y="50" width="100" height="80" rx="10" fill="#1a2a6c" opacity="0.1"/>
+  <path d="M70,70 l20,20 l40,-40" stroke="#4CAF50" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Sustainability -->
+  <circle cx="200" cy="90" r="40" fill="#4CAF50" opacity="0.1"/>
+  <path d="M180,90 c20,-20 20,20 40,0" stroke="#4CAF50" stroke-width="2" fill="none"/>
+  <path d="M200,70 v40" stroke="#4CAF50" stroke-width="2"/>
+  
+  <!-- Digital Plans -->
+  <rect x="300" y="50" width="60" height="80" fill="#1a2a6c" opacity="0.1"/>
+  <path d="M310,60 h40 M310,75 h40 M310,90 h20" stroke="#1a2a6c" stroke-width="2" opacity="0.3"/>
+  
+  <!-- Compliance -->
+  <rect x="50" y="180" width="80" height="80" rx="5" fill="#1a2a6c" opacity="0.1"/>
+  <path d="M65,220 l15,15 l35,-35" stroke="#1a2a6c" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- Real-time Updates -->
+  <circle cx="200" cy="220" r="40" fill="#1a2a6c" opacity="0.1"/>
+  <path d="M200,220 l25,0 M200,220 l0,-30" stroke="#1a2a6c" stroke-width="2"/>
+  <circle cx="200" cy="220" r="5" fill="#1a2a6c"/>
+  
+  <!-- Analytics -->
+  <path d="M300,260 v-80 h60" stroke="#1a2a6c" stroke-width="2" opacity="0.2"/>
+  <path d="M310,220 v-20 M330,220 v-40 M350,220 v-30" 
+        stroke="#1a2a6c" stroke-width="10" stroke-linecap="round" opacity="0.1"/>
+</svg> 

@@ -2,12 +2,166 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { FaCity, FaBuilding, FaPlus, FaEye, FaTrash, FaEdit, FaSearch } from 'react-icons/fa';
+import { 
+  FaCity, 
+  FaBuilding, 
+  FaPlus, 
+  FaEye, 
+  FaTrash, 
+  FaEdit, 
+  FaSearch,
+  FaLeaf,
+  FaSolarPanel,
+  FaWater,
+  FaRecycle
+} from 'react-icons/fa';
 
 const PageContainer = styled.div`
   padding: 2rem;
-  max-width: 1200px;
+  max-width: 1400px;
   margin: 0 auto;
+`;
+
+const HeroSection = styled.div`
+  background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);
+  border-radius: 20px;
+  padding: 3rem;
+  margin-bottom: 3rem;
+  color: white;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    padding: 2rem;
+  }
+`;
+
+const HeroContent = styled.div`
+  h1 {
+    font-size: 2.5rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.2;
+  }
+
+  p {
+    font-size: 1.1rem;
+    margin: 0 0 1.5rem 0;
+    opacity: 0.9;
+    line-height: 1.6;
+  }
+`;
+
+const HeroImage = styled.div`
+  img {
+    width: 100%;
+    height: auto;
+    max-width: 400px;
+    margin: 0 auto;
+    display: block;
+  }
+`;
+
+const FeaturesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 3rem;
+`;
+
+const FeatureCard = styled.div`
+  background: white;
+  border-radius: 15px;
+  padding: 2rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    font-size: 2rem;
+    color: #1a2a6c;
+    margin-bottom: 1rem;
+  }
+
+  h3 {
+    margin: 0 0 1rem 0;
+    color: #1a2a6c;
+  }
+
+  p {
+    margin: 0;
+    color: #4b5563;
+    line-height: 1.6;
+  }
+`;
+
+const SearchContainer = styled.div`
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: flex;
+  gap: 1rem;
+  
+  input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #1a2a6c;
+      box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+    }
+  }
+  
+  button {
+    background: #1a2a6c;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      background: #0f1a4c;
+    }
+  }
+`;
+
+const ActionButton = styled(Link)`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: ${props => props.variant === 'primary' ? '#1a2a6c' : 'white'};
+  color: ${props => props.variant === 'primary' ? 'white' : '#1a2a6c'};
+  border: 2px solid #1a2a6c;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    background: ${props => props.variant === 'primary' ? '#0f1a4c' : '#f8fafc'};
+  }
 `;
 
 const Header = styled.div`
@@ -23,47 +177,6 @@ const Title = styled.h1`
   align-items: center;
   gap: 0.75rem;
   color: #1a2a6c;
-`;
-
-const ActionButton = styled(Link)`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: #1a2a6c;
-  color: white;
-  border-radius: 4px;
-  text-decoration: none;
-  font-weight: 600;
-  
-  &:hover {
-    background: #0f1a4c;
-  }
-`;
-
-const SearchContainer = styled.div`
-  display: flex;
-  margin-bottom: 2rem;
-  
-  input {
-    flex: 1;
-    padding: 0.75rem;
-    border: 1px solid #ddd;
-    border-radius: 4px 0 0 4px;
-    font-size: 1rem;
-  }
-  
-  button {
-    background: #1a2a6c;
-    color: white;
-    border: none;
-    border-radius: 0 4px 4px 0;
-    width: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-  }
 `;
 
 const Card = styled.div`
@@ -316,24 +429,54 @@ const BuildingPlanDashboard = () => {
     <PageContainer>
       {loading && <LoadingOverlay />}
       
-      <Header>
-        <Title>
-          <FaBuilding /> Building Plans
-        </Title>
-        <ActionButton to="/building-plans/new">
-          <FaPlus /> Create New Plan
-        </ActionButton>
-      </Header>
-      
+      <HeroSection>
+        <HeroContent>
+          <h1>Smart Building Plan Management</h1>
+          <p>
+            Transform your construction projects with our intelligent plan verification system.
+            Ensure compliance, optimize efficiency, and build sustainable structures for the future.
+          </p>
+          <ActionButton to="/building-plans/new" variant="primary">
+            <FaPlus /> Create New Plan
+          </ActionButton>
+        </HeroContent>
+        <HeroImage>
+          <img src="/assets/building-plan-hero.svg" alt="Building Plan Hero" />
+        </HeroImage>
+      </HeroSection>
+
+      <FeaturesGrid>
+        <FeatureCard>
+          <FaLeaf />
+          <h3>Sustainable Design</h3>
+          <p>Implement eco-friendly features and green building practices to minimize environmental impact and maximize energy efficiency.</p>
+        </FeatureCard>
+        <FeatureCard>
+          <FaSolarPanel />
+          <h3>Smart Integration</h3>
+          <p>Incorporate modern technologies and smart systems for improved building performance and occupant comfort.</p>
+        </FeatureCard>
+        <FeatureCard>
+          <FaWater />
+          <h3>Resource Optimization</h3>
+          <p>Optimize water usage and energy consumption through innovative design solutions and efficient systems.</p>
+        </FeatureCard>
+        <FeatureCard>
+          <FaRecycle />
+          <h3>Circular Economy</h3>
+          <p>Promote sustainable materials and waste reduction strategies aligned with circular economy principles.</p>
+        </FeatureCard>
+      </FeaturesGrid>
+
       <SearchContainer>
         <input 
           type="text" 
-          placeholder="Search plans by city name..." 
+          placeholder="Search plans by city name or project type..." 
           value={searchTerm}
           onChange={handleSearch}
         />
         <button>
-          <FaSearch />
+          <FaSearch /> Search Plans
         </button>
       </SearchContainer>
       
@@ -348,7 +491,7 @@ const BuildingPlanDashboard = () => {
           <FaCity />
           <h3>No Building Plans Found</h3>
           <p>Get started by creating your first building plan</p>
-          <ActionButton to="/building-plans/new" style={{ display: 'inline-flex' }}>
+          <ActionButton to="/building-plans/new" variant="primary">
             <FaPlus /> Create New Plan
           </ActionButton>
         </EmptyState>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="200" height="150" viewBox="0 0 200 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Building silhouette -->
+  <rect x="40" y="30" width="120" height="100" fill="#ffffff" opacity="0.2"/>
+  <rect x="60" y="50" width="20" height="20" fill="#ffffff" opacity="0.3"/>
+  <rect x="90" y="50" width="20" height="20" fill="#ffffff" opacity="0.3"/>
+  <rect x="120" y="50" width="20" height="20" fill="#ffffff" opacity="0.3"/>
+  <rect x="60" y="80" width="20" height="20" fill="#ffffff" opacity="0.3"/>
+  <rect x="90" y="80" width="20" height="20" fill="#ffffff" opacity="0.3"/>
+  <rect x="120" y="80" width="20" height="20" fill="#ffffff" opacity="0.3"/>
+  
+  <!-- Checkmark -->
+  <circle cx="150" cy="50" r="20" fill="#4CAF50" opacity="0.9"/>
+  <path d="M142 50l6 6l12-12" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Decorative elements -->
+  <circle cx="30" cy="120" r="5" fill="#ffffff" opacity="0.2"/>
+  <circle cx="170" cy="100" r="3" fill="#ffffff" opacity="0.2"/>
+  <circle cx="50" cy="20" r="4" fill="#ffffff" opacity="0.2"/>
+  <circle cx="150" cy="30" r="6" fill="#ffffff" opacity="0.2"/>
+</svg> 

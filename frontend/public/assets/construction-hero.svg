@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="500" height="300" viewBox="0 0 500 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="500" height="300" fill="#1a2a6c" opacity="0.05"/>
+  
+  <!-- Blueprint Grid -->
+  <path d="M0,30 h500 M0,60 h500 M0,90 h500 M0,120 h500 M0,150 h500 M0,180 h500 M0,210 h500 M0,240 h500 M0,270 h500" 
+        stroke="#1a2a6c" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.1"/>
+  <path d="M50,0 v300 M100,0 v300 M150,0 v300 M200,0 v300 M250,0 v300 M300,0 v300 M350,0 v300 M400,0 v300 M450,0 v300" 
+        stroke="#1a2a6c" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.1"/>
+  
+  <!-- Modern Building -->
+  <path d="M100,250 v-180 h100 v180" fill="#1a2a6c" opacity="0.1" stroke="#1a2a6c" stroke-width="2"/>
+  <path d="M200,250 v-150 h80 v150" fill="#1a2a6c" opacity="0.15" stroke="#1a2a6c" stroke-width="2"/>
+  <path d="M280,250 v-120 h60 v120" fill="#1a2a6c" opacity="0.2" stroke="#1a2a6c" stroke-width="2"/>
+  
+  <!-- Windows -->
+  <rect x="120" y="100" width="20" height="20" fill="#1a2a6c" opacity="0.3"/>
+  <rect x="160" y="100" width="20" height="20" fill="#1a2a6c" opacity="0.3"/>
+  <rect x="120" y="140" width="20" height="20" fill="#1a2a6c" opacity="0.3"/>
+  <rect x="160" y="140" width="20" height="20" fill="#1a2a6c" opacity="0.3"/>
+  <rect x="120" y="180" width="20" height="20" fill="#1a2a6c" opacity="0.3"/>
+  <rect x="160" y="180" width="20" height="20" fill="#1a2a6c" opacity="0.3"/>
+  
+  <!-- Sustainability Elements -->
+  <circle cx="340" cy="80" r="20" fill="#4CAF50" opacity="0.2"/>
+  <path d="M330,80 l10,-10 l10,10 l-10,-10 l10,-10" stroke="#4CAF50" stroke-width="2"/>
+  
+  <!-- Compass -->
+  <circle cx="420" cy="60" r="25" fill="#1a2a6c" opacity="0.1"/>
+  <path d="M420,40 l8,15 h-16z" fill="#1a2a6c"/>
+  <text x="420" y="55" text-anchor="middle" fill="#1a2a6c" font-size="10">N</text>
+  
+  <!-- Decorative Elements -->
+  <circle cx="50" cy="50" r="30" fill="#1a2a6c" opacity="0.1"/>
+  <circle cx="450" cy="250" r="40" fill="#4CAF50" opacity="0.1"/>
+</svg> 

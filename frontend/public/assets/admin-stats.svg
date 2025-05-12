@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="300" height="200" viewBox="0 0 300 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="300" height="200" fill="#1a2a6c" opacity="0.05"/>
+  
+  <!-- Bar Chart -->
+  <rect x="50" y="140" width="30" height="40" fill="#1a2a6c" opacity="0.2"/>
+  <rect x="90" y="100" width="30" height="80" fill="#1a2a6c" opacity="0.3"/>
+  <rect x="130" y="80" width="30" height="100" fill="#1a2a6c" opacity="0.4"/>
+  <rect x="170" y="60" width="30" height="120" fill="#1a2a6c" opacity="0.5"/>
+  <rect x="210" y="40" width="30" height="140" fill="#1a2a6c" opacity="0.6"/>
+  
+  <!-- Line Graph -->
+  <path d="M50,120 C80,100 120,140 160,60 C200,80 240,40 270,90" 
+        stroke="#4CAF50" stroke-width="3" fill="none"/>
+  
+  <!-- Data Points -->
+  <circle cx="50" cy="120" r="4" fill="#4CAF50"/>
+  <circle cx="100" cy="110" r="4" fill="#4CAF50"/>
+  <circle cx="160" cy="60" r="4" fill="#4CAF50"/>
+  <circle cx="220" cy="70" r="4" fill="#4CAF50"/>
+  <circle cx="270" cy="90" r="4" fill="#4CAF50"/>
+  
+  <!-- Grid Lines -->
+  <path d="M40,40 h240 M40,80 h240 M40,120 h240 M40,160 h240" 
+        stroke="#1a2a6c" stroke-width="0.5" stroke-dasharray="4,4" opacity="0.1"/>
+  
+  <!-- Y-Axis Labels -->
+  <text x="30" y="45" fill="#1a2a6c" font-size="10">100%</text>
+  <text x="30" y="85" fill="#1a2a6c" font-size="10">75%</text>
+  <text x="30" y="125" fill="#1a2a6c" font-size="10">50%</text>
+  <text x="30" y="165" fill="#1a2a6c" font-size="10">25%</text>
+</svg> 

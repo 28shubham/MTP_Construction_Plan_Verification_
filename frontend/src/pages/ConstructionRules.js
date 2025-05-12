@@ -1319,32 +1319,38 @@ const ConstructionRules = () => {
                           
                           <RuleInfo>
                             <InfoItem>
-                              <span>Min Dimensions:</span>
-                              <span>
-                                {rule.dimensions.minLength} × {rule.dimensions.minWidth} {rule.dimensions.unit}
-                                {rule.dimensions.minArea ? ` (${rule.dimensions.minArea} sq ${rule.dimensions.unit})` : ''}
-                              </span>
+                              <span>Min Length:</span>
+                              <span>{rule.dimensions.minLength}</span>
                             </InfoItem>
                             <InfoItem>
-                              <span>Max Dimensions:</span>
-                              <span>
-                                {rule.dimensions.maxLength && rule.dimensions.maxWidth ? 
-                                  `${rule.dimensions.maxLength} × ${rule.dimensions.maxWidth} ${rule.dimensions.unit}` : 
-                                  'Not specified'}
-                                {rule.dimensions.maxArea ? ` (${rule.dimensions.maxArea} sq ${rule.dimensions.unit})` : ''}
-                              </span>
+                              <span>Min Width:</span>
+                              <span>{rule.dimensions.minWidth}</span>
                             </InfoItem>
                             <InfoItem>
-                              <span>Required:</span>
-                              <span>{rule.isRequired ? 'Yes' : 'No'}</span>
+                              <span>Min Area:</span>
+                              <span>{rule.dimensions.minArea}</span>
                             </InfoItem>
                           </RuleInfo>
                           
-                          {rule.additionalRequirements && (
-                            <p>
-                              <strong>Additional Requirements:</strong> {rule.additionalRequirements}
-                            </p>
-                          )}
+                          <RuleInfo>
+                            <InfoItem>
+                              <span>Max Length:</span>
+                              <span>{rule.dimensions.maxLength}</span>
+                            </InfoItem>
+                            <InfoItem>
+                              <span>Max Width:</span>
+                              <span>{rule.dimensions.maxWidth}</span>
+                            </InfoItem>
+                            <InfoItem>
+                              <span>Max Area:</span>
+                              <span>{rule.dimensions.maxArea}</span>
+                            </InfoItem>
+                          </RuleInfo>
+                          
+                          <InfoItem>
+                            <span>Required:</span>
+                            <span>{rule.isRequired ? 'Yes' : 'No'}</span>
+                          </InfoItem>
                         </RuleItem>
                       ))}
                     </RulesList>
@@ -1498,7 +1504,7 @@ const ConstructionRules = () => {
                 
                 <FormRow>
                   <FormGroup>
-                    <Label>Min Length (meters) *</Label>
+                    <Label>Min Length *</Label>
                     <Input 
                       type="number"
                       value={rule.dimensions.minLength}
@@ -1510,7 +1516,7 @@ const ConstructionRules = () => {
                   </FormGroup>
                   
                   <FormGroup>
-                    <Label>Min Width (meters) *</Label>
+                    <Label>Min Width *</Label>
                     <Input 
                       type="number"
                       value={rule.dimensions.minWidth}
@@ -1522,7 +1528,7 @@ const ConstructionRules = () => {
                   </FormGroup>
                   
                   <FormGroup>
-                    <Label>Min Area (sq. meters) *</Label>
+                    <Label>Min Area *</Label>
                     <Input 
                       type="number"
                       value={rule.dimensions.minArea}
@@ -1547,7 +1553,7 @@ const ConstructionRules = () => {
 
                 <FormRow>
                   <FormGroup>
-                    <Label>Max Length (meters)</Label>
+                    <Label>Max Length</Label>
                     <Input 
                       type="number"
                       value={rule.dimensions.maxLength}
@@ -1558,7 +1564,7 @@ const ConstructionRules = () => {
                   </FormGroup>
                   
                   <FormGroup>
-                    <Label>Max Width (meters)</Label>
+                    <Label>Max Width</Label>
                     <Input 
                       type="number"
                       value={rule.dimensions.maxWidth}
@@ -1569,7 +1575,7 @@ const ConstructionRules = () => {
                   </FormGroup>
                   
                   <FormGroup>
-                    <Label>Max Area (sq. meters)</Label>
+                    <Label>Max Area</Label>
                     <Input 
                       type="number"
                       value={rule.dimensions.maxArea}

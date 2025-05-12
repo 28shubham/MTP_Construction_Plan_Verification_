@@ -1,350 +1,299 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { 
-  FaUsers, 
+  FaUserShield, 
   FaClipboardCheck, 
-  FaUsersCog, 
-  FaCalendarAlt,
-  FaTachometerAlt,
-  FaUserPlus,
-  FaClipboardList,
+  FaUsers, 
+  FaFileAlt,
+  FaChartLine,
   FaCog,
-  FaBars,
-  FaHammer,
-  FaCity
+  FaHistory,
+  FaUserPlus,
+  FaCheckCircle,
+  FaTimesCircle,
+  FaComments,
+  FaTools
 } from 'react-icons/fa';
-import { logoutAdmin, getAdminInfo } from '../services/adminService';
+import { getAdminInfo } from '../services/adminService';
+import AdminDashboardLayout from '../components/AdminDashboardLayout';
 
 const DashboardContainer = styled.div`
-  min-height: 100vh;
-  background: #f5f7fa;
-  display: flex;
-`;
-
-const Sidebar = styled.div`
-  width: ${props => props.isOpen ? '250px' : '0'};
-  background: #1a2a6c;
-  color: white;
-  transition: width 0.3s ease;
-  overflow: hidden;
-  height: 100vh;
-  position: fixed;
-  left: 0;
-  top: 0;
-`;
-
-const SidebarContent = styled.div`
-  padding: 2rem 1rem;
-  width: 250px;
-`;
-
-const SidebarHeader = styled.div`
-  padding: 0 1rem 2rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 1rem;
-  h2 {
-    margin: 0;
-    font-size: 1.25rem;
-  }
-`;
-
-const NavItem = styled(Link)`
-  display: flex;
-  align-items: center;
-  padding: 0.75rem 1rem;
-  color: white;
-  text-decoration: none;
-  border-radius: 4px;
-  margin-bottom: 0.5rem;
-  transition: all 0.3s ease;
-  
-  svg {
-    margin-right: 0.75rem;
-    font-size: 1.25rem;
-  }
-
-  &:hover, &.active {
-    background: rgba(255, 255, 255, 0.1);
-  }
-`;
-
-const MainWrapper = styled.div`
-  flex: 1;
-  margin-left: ${props => props.sidebarOpen ? '250px' : '0'};
-  transition: margin-left 0.3s ease;
-  min-height: 100vh;
-`;
-
-const Header = styled.header`
-  background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%);
-  color: white;
-  padding: 1rem 2rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-`;
-
-const MenuButton = styled.button`
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  
-  &:hover {
-    opacity: 0.8;
-  }
-`;
-
-const HeaderTitle = styled.h1`
-  font-size: 1.5rem;
-  margin: 0;
-`;
-
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const LogoutButton = styled.button`
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.2);
-  }
-`;
-
-const MainContent = styled.main`
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
+  min-height: 100vh;
+  background: #f8fafc;
 `;
 
-const StatsGrid = styled.div`
+const HeroSection = styled.div`
+  background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);
+  border-radius: 20px;
+  padding: 4rem;
+  margin-bottom: 4rem;
+  color: white;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 2rem;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(26, 42, 108, 0.15);
 `;
 
-const StatCard = styled.div`
-  background: white;
-  padding: 1.5rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-
-  svg {
-    font-size: 2rem;
-    color: #1a2a6c;
-  }
-`;
-
-const StatInfo = styled.div`
-  h3 {
-    margin: 0;
-    font-size: 0.875rem;
-    color: #6b7280;
+const HeroContent = styled.div`
+  h1 {
+    font-size: 3rem;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.2;
+    font-weight: 700;
   }
 
   p {
-    margin: 0.25rem 0 0;
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #1f2937;
+    font-size: 1.2rem;
+    margin: 0;
+    opacity: 0.9;
+    line-height: 1.8;
   }
 `;
 
-const TabsContainer = styled.div`
+const AdminFeaturesGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+`;
+
+const AdminFeatureCard = styled.div`
   background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-  padding: 1rem;
-  margin-bottom: 2rem;
+  border-radius: 20px;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: transform 0.3s ease;
+
+  &:hover {
+    transform: translateY(-5px);
+  }
+
+  svg {
+    font-size: 2.5rem;
+    color: #1a2a6c;
+    margin-bottom: 1.5rem;
+  }
+
+  h3 {
+    font-size: 1.5rem;
+    color: #1a2a6c;
+    margin: 0 0 1rem 0;
+  }
+
+  p {
+    color: #4b5563;
+    line-height: 1.6;
+    margin: 0;
+  }
 `;
 
-const TabButtons = styled.div`
+const QuickActionsSection = styled.div`
+  background: white;
+  border-radius: 20px;
+  padding: 3rem;
+  margin-bottom: 4rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+`;
+
+const ActionButtons = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+`;
+
+const ActionButton = styled(Link)`
   display: flex;
+  align-items: center;
   gap: 1rem;
-  border-bottom: 1px solid #e5e7eb;
-  padding-bottom: 1rem;
-  margin-bottom: 1rem;
-`;
-
-const TabButton = styled.button`
-  background: ${props => props.active ? '#1a2a6c' : 'transparent'};
-  color: ${props => props.active ? 'white' : '#6b7280'};
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
+  background: #f8fafc;
+  color: #1a2a6c;
+  padding: 1.5rem;
+  border-radius: 10px;
+  text-decoration: none;
+  font-weight: 600;
   transition: all 0.3s ease;
 
   &:hover {
-    background: ${props => props.active ? '#1a2a6c' : '#f3f4f6'};
+    background: #1a2a6c;
+    color: white;
+    transform: translateY(-3px);
+  }
+
+  svg {
+    font-size: 1.5rem;
+  }
+`;
+
+const SectionTitle = styled.h2`
+  font-size: 2rem;
+  color: #1a2a6c;
+  margin: 0 0 2rem 0;
+  text-align: center;
+  position: relative;
+  padding-bottom: 1rem;
+
+  &:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 4px;
+    background: linear-gradient(90deg, #1a2a6c, #2a4858);
+    border-radius: 2px;
   }
 `;
 
 const AdminDashboard = () => {
-  const navigate = useNavigate();
   const adminInfo = getAdminInfo();
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-  const [activeTab, setActiveTab] = useState('dashboard');
-
-  const handleLogout = () => {
-    logoutAdmin();
-    navigate('/admin/login');
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
 
   return (
+    <AdminDashboardLayout>
     <DashboardContainer>
-      <Sidebar isOpen={isSidebarOpen}>
-        <SidebarContent>
-          <SidebarHeader>
-            <h2>Admin Panel</h2>
-          </SidebarHeader>
-          <nav>
-            <NavItem 
-              to="/admin/dashboard" 
-              className={activeTab === 'dashboard' ? 'active' : ''}
-              onClick={() => setActiveTab('dashboard')}
-            >
-              <FaTachometerAlt />
-              Dashboard
-            </NavItem>
-            <NavItem 
-              to="/admin/register-admin" 
-              className={activeTab === 'register' ? 'active' : ''}
-              onClick={() => setActiveTab('register')}
-            >
-              <FaUserPlus />
-              Register Admin
-            </NavItem>
-            <NavItem 
-              to="/admin/verifications" 
-              className={activeTab === 'verifications' ? 'active' : ''}
-              onClick={() => setActiveTab('verifications')}
-            >
-              <FaClipboardList />
-              Verifications
-            </NavItem>
-            <NavItem 
-              to="/admin/lists" 
-              className={activeTab === 'lists' ? 'active' : ''}
-              onClick={() => setActiveTab('lists')}
-            >
-              <FaUsersCog />
-              Admin List
-            </NavItem>
-            <NavItem 
-              to="/admin/settings" 
-              className={activeTab === 'settings' ? 'active' : ''}
-              onClick={() => setActiveTab('settings')}
-            >
-              <FaCog />
-              Settings
-            </NavItem>
-            <NavItem 
-              to="/admin/construction-rules" 
-              className={activeTab === 'rules' ? 'active' : ''}
-              onClick={() => setActiveTab('rules')}
-            >
-              <FaHammer />
-              Construction Rules
-            </NavItem>
-            <NavItem 
-              to="/building-plans" 
-              className={activeTab === 'building-plans' ? 'active' : ''}
-              onClick={() => setActiveTab('building-plans')}
-            >
-              <FaCity />
-              Building Plans
-            </NavItem>
-          </nav>
-        </SidebarContent>
-      </Sidebar>
+        <HeroSection>
+          <HeroContent>
+            <h1>Construction Plan Verification Admin Portal</h1>
+            <p>
+              Comprehensive administrative control center for managing construction plan verifications, user accounts, and system operations.
+            </p>
+          </HeroContent>
+        </HeroSection>
 
-      <MainWrapper sidebarOpen={isSidebarOpen}>
-        <Header>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-            <MenuButton onClick={toggleSidebar}>
-              <FaBars />
-            </MenuButton>
-            <HeaderTitle>Admin Dashboard</HeaderTitle>
-          </div>
-          <UserInfo>
-            <span>{adminInfo?.name || 'Admin'}</span>
-            <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
-          </UserInfo>
-        </Header>
+        <AdminFeaturesGrid>
+          <AdminFeatureCard>
+            <FaClipboardCheck />
+            <h3>Plan Verification Management</h3>
+            <p>
+              - Review submitted construction plans
+              - Verify compliance with regulations
+              - Approve or reject submissions
+              - Track verification status
+              - Set verification parameters
+            </p>
+          </AdminFeatureCard>
 
-        <MainContent>
-          <StatsGrid>
-            <StatCard className="stat-card">
+          <AdminFeatureCard>
+            <FaUsers />
+            <h3>User Administration</h3>
+            <p>
+              - Manage user accounts and profiles
+              - Control access permissions
+              - Handle user verification requests
+              - Monitor user activities
+              - Manage architect registrations
+            </p>
+          </AdminFeatureCard>
+
+          <AdminFeatureCard>
+            <FaChartLine />
+            <h3>System Analytics</h3>
+            <p>
+              - Track verification statistics
+              - Monitor system performance
+              - Generate usage reports
+              - Analyze verification trends
+              - Review processing times
+            </p>
+          </AdminFeatureCard>
+
+          <AdminFeatureCard>
+            <FaTools />
+            <h3>Technical Operations</h3>
+            <p>
+              - Configure system settings
+              - Manage verification rules
+              - Update building codes
+              - Set compliance parameters
+              - Maintain verification standards
+            </p>
+          </AdminFeatureCard>
+
+          <AdminFeatureCard>
+            <FaComments />
+            <h3>Communication Center</h3>
+            <p>
+              - Send notifications
+              - Respond to queries
+              - Manage feedback
+              - Issue announcements
+              - Handle support requests
+            </p>
+          </AdminFeatureCard>
+
+          <AdminFeatureCard>
+            <FaHistory />
+            <h3>Audit & History</h3>
+            <p>
+              - View verification history
+              - Track admin actions
+              - Monitor system changes
+              - Review user activities
+              - Generate audit reports
+            </p>
+          </AdminFeatureCard>
+        </AdminFeaturesGrid>
+
+        <QuickActionsSection>
+          <SectionTitle>Quick Actions</SectionTitle>
+          <ActionButtons>
+            <ActionButton to="/admin/verifications">
+              <FaFileAlt />
+              Review Plans
+            </ActionButton>
+            <ActionButton to="/admin/users">
               <FaUsers />
-              <StatInfo>
-                <h3>Total Users</h3>
-                <p>157</p>
-              </StatInfo>
-            </StatCard>
+              Manage Users
+            </ActionButton>
+            <ActionButton to="/admin/verification-rules">
+              <FaTools />
+              Verification Rules
+            </ActionButton>
+            <ActionButton to="/admin/history">
+              <FaHistory />
+              View History
+            </ActionButton>
+            <ActionButton to="/admin/register">
+              <FaUserPlus />
+              Add Admin
+            </ActionButton>
+            <ActionButton to="/admin/notifications">
+              <FaComments />
+              Notifications
+            </ActionButton>
+          </ActionButtons>
+        </QuickActionsSection>
 
-            <StatCard className="stat-card">
+        <QuickActionsSection>
+          <SectionTitle>Verification Actions</SectionTitle>
+          <ActionButtons>
+            <ActionButton to="/admin/pending-verifications">
               <FaClipboardCheck />
-              <StatInfo>
-                <h3>Pending Verifications</h3>
-                <p>37</p>
-              </StatInfo>
-            </StatCard>
-
-            <StatCard className="stat-card">
-              <FaUsersCog />
-              <StatInfo>
-                <h3>Active Admins</h3>
-                <p>5</p>
-              </StatInfo>
-            </StatCard>
-
-            <StatCard className="stat-card">
-              <FaCalendarAlt />
-              <StatInfo>
-                <h3>Today's Appointments</h3>
-                <p>12</p>
-              </StatInfo>
-            </StatCard>
-          </StatsGrid>
-
-          <TabsContainer>
-            <TabButtons>
-              <TabButton active>Latest Activity</TabButton>
-              <TabButton>Tasks</TabButton>
-              <TabButton>Application Review</TabButton>
-            </TabButtons>
-
-            <div style={{ padding: '1rem 0' }}>
-              <p style={{ color: '#6b7280' }}>No recent activities to display.</p>
-            </div>
-          </TabsContainer>
-        </MainContent>
-      </MainWrapper>
+              Pending Verifications
+            </ActionButton>
+            <ActionButton to="/admin/approved-plans">
+              <FaCheckCircle />
+              Approved Plans
+            </ActionButton>
+            <ActionButton to="/admin/rejected-plans">
+              <FaTimesCircle />
+              Rejected Plans
+            </ActionButton>
+            <ActionButton to="/admin/verification-settings">
+              <FaCog />
+              Verification Settings
+            </ActionButton>
+          </ActionButtons>
+        </QuickActionsSection>
     </DashboardContainer>
+    </AdminDashboardLayout>
   );
 };
 

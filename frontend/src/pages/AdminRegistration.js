@@ -2,12 +2,21 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { toast } from 'react-toastify';
-import { FaUserPlus, FaEnvelope, FaLock, FaUserShield, FaCheckSquare } from 'react-icons/fa';
+import { 
+  FaUserPlus, 
+  FaEnvelope, 
+  FaLock, 
+  FaUserShield, 
+  FaCheckSquare, 
+  FaExclamationCircle,
+  FaArrowLeft
+} from 'react-icons/fa';
 import { registerAdmin } from '../services/adminService';
+import AdminDashboardLayout from '../components/AdminDashboardLayout';
 
-const Container = styled.div`
+const PageContent = styled.div`
   padding: 2rem;
-  max-width: 800px;
+  max-width: 1400px;
   margin: 0 auto;
   animation: fadeIn 0.5s ease;
 
@@ -23,36 +32,94 @@ const Container = styled.div`
   }
 `;
 
-const Title = styled.h2`
-  color: #1f2937;
-  margin-bottom: 2rem;
+const Header = styled.div`
+  background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px 12px 0 0;
   display: flex;
   align-items: center;
   gap: 1rem;
+  margin-bottom: 0;
+`;
+
+const Title = styled.h1`
+  margin: 0;
   font-size: 1.8rem;
-  padding-bottom: 1rem;
-  border-bottom: 2px solid #e5e7eb;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
 
   svg {
-    color: #1a2a6c;
     font-size: 2rem;
+  }
+`;
+
+const BackButton = styled.button`
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-right: 1rem;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  svg {
+    font-size: 1rem;
   }
 `;
 
 const Form = styled.form`
   background: white;
   padding: 2.5rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 15px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  border-radius: 0 0 12px 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 10px 15px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+`;
 
-  &:hover {
-    transform: translateY(-2px);
+const FormSection = styled.div`
+  background: #f8fafc;
+  padding: 2rem;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+
+  h2 {
+    margin: 0 0 1.5rem 0;
+    color: #1a2a6c;
+    font-size: 1.2rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+`;
+
+const FormGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
   }
 `;
 
 const FormGroup = styled.div`
-  margin-bottom: 2rem;
   position: relative;
 
   svg {
@@ -61,10 +128,6 @@ const FormGroup = styled.div`
     top: 2.7rem;
     color: #6b7280;
     font-size: 1.2rem;
-  }
-
-  &:last-child {
-    margin-bottom: 1.5rem;
   }
 `;
 
@@ -84,13 +147,12 @@ const Input = styled.input`
   border-radius: 8px;
   font-size: 1rem;
   transition: all 0.3s ease;
-  background-color: #f9fafb;
+  background-color: white;
 
   &:focus {
     outline: none;
     border-color: #1a2a6c;
     box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
-    background-color: white;
   }
 
   &::placeholder {
@@ -98,50 +160,35 @@ const Input = styled.input`
   }
 `;
 
-const Select = styled.select`
-  width: 100%;
-  padding: 0.875rem 1rem 0.875rem 3rem;
-  border: 2px solid #e5e7eb;
-  border-radius: 8px;
-  font-size: 1rem;
-  background-color: #f9fafb;
-  transition: all 0.3s ease;
-  appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 1rem center;
-  background-size: 1em;
+const PermissionsGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
 
-  &:focus {
-    outline: none;
-    border-color: #1a2a6c;
-    box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
-    background-color: white;
+  @media (max-width: 1200px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
   }
 `;
 
-const CheckboxGroup = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1rem;
-  margin-top: 0.75rem;
-  padding: 1rem;
-  background-color: #f9fafb;
-  border-radius: 8px;
-  border: 2px solid #e5e7eb;
-`;
-
-const CheckboxLabel = styled.label`
+const PermissionCard = styled.label`
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  padding: 1rem;
+  background: white;
+  border: 2px solid #e5e7eb;
+  border-radius: 8px;
   cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 6px;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
 
   &:hover {
-    background-color: rgba(26, 42, 108, 0.05);
+    border-color: #1a2a6c;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   }
 
   input[type="checkbox"] {
@@ -160,11 +207,30 @@ const CheckboxLabel = styled.label`
   span {
     font-size: 0.95rem;
     color: #4b5563;
+    font-weight: 500;
+  }
+`;
+
+const ErrorMessage = styled.div`
+  color: #dc2626;
+  background: #fee2e2;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+
+  svg {
+    color: #dc2626;
+    font-size: 1.2rem;
+    flex-shrink: 0;
   }
 `;
 
 const Button = styled.button`
-  background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%);
+  background: linear-gradient(135deg, #1a2a6c 0%, #2a4858 100%);
   color: white;
   padding: 1rem 2rem;
   border: none;
@@ -174,7 +240,6 @@ const Button = styled.button`
   cursor: pointer;
   width: 100%;
   transition: all 0.3s ease;
-  margin-top: 1rem;
   position: relative;
   overflow: hidden;
 
@@ -209,19 +274,6 @@ const Button = styled.button`
   }
 `;
 
-const ErrorMessage = styled.div`
-  color: #dc2626;
-  font-size: 0.875rem;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-
-  svg {
-    font-size: 1rem;
-  }
-`;
-
 const AdminRegistration = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -237,7 +289,9 @@ const AdminRegistration = () => {
     'manage_users',
     'verify_plans',
     'manage_admins',
-    'view_reports'
+    'view_reports',
+    'manage_settings',
+    'audit_logs'
   ];
 
   const handleChange = (e) => {
@@ -246,7 +300,7 @@ const AdminRegistration = () => {
       ...prev,
       [name]: value
     }));
-    setError(''); // Clear error when user makes changes
+    setError('');
   };
 
   const handlePermissionChange = (permission) => {
@@ -289,19 +343,9 @@ const AdminRegistration = () => {
     setLoading(true);
 
     try {
-      const response = await registerAdmin(formData);
+      await registerAdmin(formData);
       toast.success('Admin registered successfully!');
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        password: '',
-        permissions: []
-      });
-
-      // Optionally redirect to admin list or dashboard
-      navigate('/admin/dashboard');
+      navigate('/admin/lists');
     } catch (error) {
       console.error('Registration error:', error);
       setError(error.message || 'Failed to register admin. Please try again.');
@@ -312,91 +356,107 @@ const AdminRegistration = () => {
   };
 
   return (
-    <Container>
-      <Title>
-        <FaUserPlus />
-        Register New Admin
-      </Title>
+    <AdminDashboardLayout>
+      <PageContent>
+        <Header>
+          <BackButton onClick={() => navigate('/admin/lists')}>
+            <FaArrowLeft />
+            Back to List
+          </BackButton>
+          <Title>
+            <FaUserPlus />
+            Register New Admin
+          </Title>
+        </Header>
 
-      <Form onSubmit={handleSubmit}>
-        <FormGroup>
-          <Label htmlFor="name">Full Name</Label>
-          <FaUserShield />
-          <Input
-            type="text"
-            id="name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-            required
-            placeholder="Enter admin's full name"
-          />
-        </FormGroup>
+        <Form onSubmit={handleSubmit}>
+          {error && (
+            <ErrorMessage>
+              <FaExclamationCircle />
+              {error}
+            </ErrorMessage>
+          )}
 
-        <FormGroup>
-          <Label htmlFor="email">Email Address</Label>
-          <FaEnvelope />
-          <Input
-            type="email"
-            id="email"
-            name="email"
-            value={formData.email}
-            onChange={handleChange}
-            required
-            placeholder="Enter admin's email address"
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <Label htmlFor="password">Password</Label>
-          <FaLock />
-          <Input
-            type="password"
-            id="password"
-            name="password"
-            value={formData.password}
-            onChange={handleChange}
-            required
-            placeholder="Create a strong password"
-            minLength="3"
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <Label>
-            <FaCheckSquare style={{ position: 'static', marginRight: '0.5rem' }} />
-            Admin Permissions
-          </Label>
-          <CheckboxGroup>
-            {permissions.map(permission => (
-              <CheckboxLabel key={permission}>
-                <input
-                  type="checkbox"
-                  checked={formData.permissions.includes(permission)}
-                  onChange={() => handlePermissionChange(permission)}
+          <FormSection>
+            <h2>
+              <FaUserShield />
+              Basic Information
+            </h2>
+            <FormGrid>
+              <FormGroup>
+                <Label htmlFor="name">Full Name</Label>
+                <FaUserShield />
+                <Input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter admin's full name"
                 />
-                <span>
-                  {permission.split('_').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1)
-                  ).join(' ')}
-                </span>
-              </CheckboxLabel>
-            ))}
-          </CheckboxGroup>
-        </FormGroup>
+              </FormGroup>
 
-        {error && (
-          <ErrorMessage>
-            <FaUserShield />
-            {error}
-          </ErrorMessage>
-        )}
+              <FormGroup>
+                <Label htmlFor="email">Email Address</Label>
+                <FaEnvelope />
+                <Input
+                  type="email"
+                  id="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  required
+                  placeholder="Enter admin's email address"
+                />
+              </FormGroup>
 
-        <Button type="submit" disabled={loading}>
-          {loading ? 'Registering...' : 'Register Admin'}
-        </Button>
-      </Form>
-    </Container>
+              <FormGroup>
+                <Label htmlFor="password">Password</Label>
+                <FaLock />
+                <Input
+                  type="password"
+                  id="password"
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  placeholder="Create a strong password"
+                  minLength="3"
+                />
+              </FormGroup>
+            </FormGrid>
+          </FormSection>
+
+          <FormSection>
+            <h2>
+              <FaCheckSquare />
+              Admin Permissions
+            </h2>
+            <PermissionsGrid>
+              {permissions.map(permission => (
+                <PermissionCard key={permission}>
+                  <input
+                    type="checkbox"
+                    checked={formData.permissions.includes(permission)}
+                    onChange={() => handlePermissionChange(permission)}
+                  />
+                  <span>
+                    {permission.split('_').map(word => 
+                      word.charAt(0).toUpperCase() + word.slice(1)
+                    ).join(' ')}
+                  </span>
+                </PermissionCard>
+              ))}
+            </PermissionsGrid>
+          </FormSection>
+
+          <Button type="submit" disabled={loading}>
+            {loading ? 'Registering...' : 'Register Admin'}
+          </Button>
+        </Form>
+      </PageContent>
+    </AdminDashboardLayout>
   );
 };
 
