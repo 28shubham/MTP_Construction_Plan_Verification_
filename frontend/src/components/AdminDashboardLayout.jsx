@@ -12,7 +12,8 @@ import {
   FaCog,
   FaBars,
   FaHammer,
-  FaCity
+  FaCity,
+  FaPalette
 } from 'react-icons/fa';
 import { logoutAdmin, getAdminInfo } from '../services/adminService';
 
@@ -148,6 +149,7 @@ const AdminDashboardLayout = ({ children }) => {
     else if (path.includes('settings')) setActiveTab('settings');
     else if (path.includes('construction-rules')) setActiveTab('rules');
     else if (path.includes('building-plans')) setActiveTab('building-plans');
+    else if (path.includes('color-management')) setActiveTab('color-management');
   }, []);
 
   const handleLogout = () => {
@@ -222,6 +224,14 @@ const AdminDashboardLayout = ({ children }) => {
             >
               <FaCity />
               Building Plans
+            </NavItem>
+            <NavItem 
+              to="/admin/color-management" 
+              className={activeTab === 'color-management' ? 'active' : ''}
+              onClick={() => setActiveTab('color-management')}
+            >
+              <FaPalette />
+              Color Management
             </NavItem>
           </nav>
         </SidebarContent>

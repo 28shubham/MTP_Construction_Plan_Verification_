@@ -24,6 +24,7 @@ import AdminVerifications from './pages/AdminVerifications';
 import EnhancedVerificationImage from './pages/EnhancedVerificationImage';
 import VerificationHistoryPage from './pages/VerificationHistory';
 import MakePdf from './pages/MakePdf';
+import ColorManagement from './pages/admin/ColorManagement';
 import * as pdfjsLib from 'pdfjs-dist/build/pdf';
 import pdfjsWorker from 'pdfjs-dist/build/pdf.worker.entry';
 
@@ -185,6 +186,10 @@ function App() {
         <Route
           path="/admin/verifications"
           element={<AdminRoute element={<AdminVerifications />} />}
+        />
+        <Route
+          path="/admin/color-management"
+          element={<AdminRoute element={<ColorManagement />} />}
         />
         <Route path="/verificationImage" element={<EnhancedVerificationImage />} />
         <Route 

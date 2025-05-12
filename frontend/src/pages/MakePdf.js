@@ -1,6 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import { PDFDocument, rgb } from "pdf-lib";
 import styled from "styled-components";
+import { FaUpload, FaUndo, FaDownload, FaPalette, FaInfoCircle, FaArrowLeft } from 'react-icons/fa';
+import Navbar from "./components/Navbar";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const colorMap = {
   bedroom: { label: "Bedroom", color: rgb(0.3, 0.69, 0.31), hex: "#4caf50" },
@@ -13,83 +17,267 @@ const colorMap = {
   kitchen: { label: "Kitchen", color: rgb(0.61, 0.16, 0.69), hex: "#9c27b0" },
 };
 
+const PageContainer = styled.div`
+  min-height: 100vh;
+  background: #f8fafc;
+  padding-top: 80px; // Added to account for navbar
+`;
+
 const Container = styled.div`
   display: flex;
   min-height: 80vh;
-  max-width: 1100px;
-  margin: 40px auto;
-  background: #fff;
-  border-radius: 16px;
-  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.12);
+  max-width: 1400px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 20px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
   overflow: hidden;
+  position: relative;
 `;
 
 const Sidebar = styled.div`
-  width: 260px;
+  width: 320px;
   background: linear-gradient(135deg, #1a2a6c 0%, #b21f1f 100%);
-  color: #fff;
-  padding: 2rem 1.5rem;
+  color: white;
+  padding: 2rem;
   display: flex;
   flex-direction: column;
   gap: 2rem;
+  position: relative;
+  overflow-y: auto;
 `;
 
 const Main = styled.div`
   flex: 1;
   padding: 2rem;
-  background: #f5f7fa;
+  background: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
+  overflow-y: auto;
+`;
+
+const Title = styled.h1`
+  font-size: 2rem;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  color: white;
+  
+  svg {
+    font-size: 1.8rem;
+  }
+`;
+
+const Description = styled.p`
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+`;
+
+const FileUploadContainer = styled.div`
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+
+  svg {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  input {
+    display: none;
+  }
+`;
+
+const RoomTypeSelect = styled.select`
+  width: 100%;
+  padding: 0.8rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  appearance: none;
+  margin-top: 0.5rem;
+
+  option {
+    background: #1a2a6c;
+    color: white;
+  }
+
+  &:focus {
+    outline: none;
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+`;
+
+const Label = styled.label`
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.9);
+  margin-bottom: 0.5rem;
+  display: block;
 `;
 
 const ShapeLegend = styled.div`
-  margin-top: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-top: auto;
+
   h4 {
-    margin-bottom: 0.5rem;
+    margin: 0 0 1rem 0;
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.1rem;
   }
+
   ul {
     list-style: none;
     padding: 0;
+    margin: 0;
   }
+
   li {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    gap: 0.8rem;
+    margin-bottom: 0.8rem;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
   }
+
   .color-dot {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
     display: inline-block;
-    border: 2px solid #fff;
+    border: 2px solid rgba(255, 255, 255, 0.2);
   }
 `;
 
 const Button = styled.button`
-  background: #fff;
-  color: #1a2a6c;
+  background: ${props => props.primary ? 'white' : 'rgba(255, 255, 255, 0.1)'};
+  color: ${props => props.primary ? '#1a2a6c' : 'white'};
   border: none;
-  border-radius: 6px;
-  padding: 0.7rem 1.2rem;
+  border-radius: 8px;
+  padding: 0.8rem 1.2rem;
   font-weight: 600;
-  margin-top: 1rem;
+  font-size: 0.95rem;
   cursor: pointer;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
-  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.3s ease;
+  width: 100%;
+
   &:hover {
-    background: #e3e6f3;
+    transform: translateY(-2px);
+    background: ${props => props.primary ? '#f8f9fa' : 'rgba(255, 255, 255, 0.15)'};
   }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  svg {
+    font-size: 1.1rem;
+  }
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 1rem;
+  margin-top: 1rem;
 `;
 
 const CanvasWrapper = styled.div`
   position: relative;
-  border: 2px solid #e0e0e0;
-  border-radius: 8px;
-  background: #fff;
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  background: white;
   margin-top: 1rem;
-  box-shadow: 0 2px 8px rgba(44, 62, 80, 0.08);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+`;
+
+const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem;
+  text-align: center;
+  color: #6b7280;
+
+  svg {
+    font-size: 4rem;
+    margin-bottom: 1.5rem;
+    color: #9ca3af;
+  }
+
+  h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: #374151;
+  }
+
+  p {
+    margin: 0;
+    font-size: 1rem;
+    max-width: 400px;
+    line-height: 1.6;
+  }
+`;
+
+const MainHeader = styled.div`
+  width: 100%;
+  margin-bottom: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const Instructions = styled.div`
+  background: #f8fafc;
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+
+  svg {
+    color: #1a2a6c;
+    font-size: 1.5rem;
+    flex-shrink: 0;
+  }
+
+  p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 0.95rem;
+    line-height: 1.5;
+  }
 `;
 
 function MakePdf() {
@@ -101,33 +289,47 @@ function MakePdf() {
   const [drawing, setDrawing] = useState(false);
   const [startPoint, setStartPoint] = useState(null);
   const canvasRef = useRef();
+  const fileInputRef = useRef();
 
   // Load PDF and render first page as image
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      const arrayBuffer = await file.arrayBuffer();
-      setPdfBytes(arrayBuffer);
-      if (!pdfBytes || pdfBytes.byteLength === 0) {
-        console.error("Invalid or empty PDF data.");
-        alert("The uploaded PDF is invalid. Please try again.");
+    if (!file) return;
+
+    try {
+      if (!file.type.includes('pdf')) {
+        toast.error('Please upload a PDF file');
         return;
       }
+
+      const arrayBuffer = await file.arrayBuffer();
+      setPdfBytes(arrayBuffer);
+
       // Render first page as image using pdfjs
       const pdfjsLib = await import("pdfjs-dist/build/pdf");
       pdfjsLib.GlobalWorkerOptions.workerSrc =
         "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
-      const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-      const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 1.5 });
-      const canvas = document.createElement("canvas");
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      setPageDims({ width: viewport.width, height: viewport.height });
-      const context = canvas.getContext("2d");
-      await page.render({ canvasContext: context, viewport }).promise;
-      setPageImage(canvas.toDataURL());
-      setShapes([]);
+
+      try {
+        const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+        const page = await pdf.getPage(1);
+        const viewport = page.getViewport({ scale: 1.5 });
+        const canvas = document.createElement("canvas");
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        setPageDims({ width: viewport.width, height: viewport.height });
+        const context = canvas.getContext("2d");
+        await page.render({ canvasContext: context, viewport }).promise;
+        setPageImage(canvas.toDataURL());
+        setShapes([]);
+        toast.success('PDF loaded successfully');
+      } catch (error) {
+        console.error("Error rendering PDF:", error);
+        toast.error('Error loading PDF. Please try another file.');
+      }
+    } catch (error) {
+      console.error("Error reading file:", error);
+      toast.error('Error reading file. Please try again.');
     }
   };
 
@@ -226,23 +428,16 @@ function MakePdf() {
 
   // Download the edited PDF
   const handleDownload = async () => {
-    if (!pdfBytes || pdfBytes.byteLength === 0) {
-      console.error("Invalid or empty PDF data.");
-      alert("The uploaded PDF is invalid. Please try again.");
+    if (!pdfBytes || shapes.length === 0) {
+      toast.error('Please upload a PDF and draw at least one shape');
       return;
     }
 
     try {
-      // Create a copy of the ArrayBuffer to avoid detachment issues
       const pdfBytesCopy = pdfBytes.slice(0);
-
-      // Load the PDF document
       const pdfDoc = await PDFDocument.load(pdfBytesCopy);
-
-      // Get the first page
       const page = pdfDoc.getPages()[0];
 
-      // Validate and draw shapes on the page
       shapes.forEach((shape) => {
         if (
           shape.x < 0 ||
@@ -251,7 +446,6 @@ function MakePdf() {
           shape.height <= 0 ||
           !colorMap[shape.room]
         ) {
-          console.error("Invalid shape data:", shape);
           throw new Error("Invalid shape data.");
         }
 
@@ -266,109 +460,152 @@ function MakePdf() {
         });
       });
 
-      // Save the modified PDF
       const newPdfBytes = await pdfDoc.save();
-
-      // Create a Blob and download the file
       const blob = new Blob([newPdfBytes], { type: "application/pdf" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "edited.pdf";
+      a.download = "marked_plan.pdf";
       a.click();
       URL.revokeObjectURL(url);
+      toast.success('PDF downloaded successfully');
     } catch (error) {
       console.error("Error downloading edited PDF:", error);
-      alert("An error occurred while downloading the PDF. Please try again.");
+      toast.error('Error downloading PDF. Please try again.');
     }
   };
 
   return (
-    <Container>
-      <Sidebar>
-        <div>
-          <h2 style={{ marginBottom: "1.5rem" }}>MAKE PDF</h2>
-          <input
-            type="file"
-            accept="application/pdf"
-            onChange={handleFileChange}
-          />
-        </div>
-        <div>
-          <label style={{ fontWeight: 600 }}>Room Type:</label>
-          <select
-            value={selectedRoom}
-            onChange={(e) => setSelectedRoom(e.target.value)}
-            style={{
-              width: "100%",
-              padding: "0.5rem",
-              borderRadius: 6,
-              marginTop: 8,
-            }}
-          >
-            {Object.entries(colorMap).map(([key, val]) => (
-              <option key={key} value={key}>
-                {val.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <Button onClick={handleUndo} disabled={shapes.length === 0}>
-          Undo Last Shape
-        </Button>
-        <Button
-          onClick={handleDownload}
-          disabled={!pdfBytes || shapes.length === 0}
-        >
-          Download Edited PDF
-        </Button>
-        <ShapeLegend>
-          <h4>Legend</h4>
-          <ul>
-            {Object.entries(colorMap).map(([key, val]) => (
-              <li key={key}>
-                <span
-                  className="color-dot"
-                  style={{ background: val.hex }}
-                ></span>
-                {val.label}
-              </li>
-            ))}
-          </ul>
-        </ShapeLegend>
-      </Sidebar>
-      <Main>
-        <h3 style={{ marginBottom: 16 }}>Draw shapes on the PDF</h3>
-        {pageImage && (
-          <CanvasWrapper
-            style={{
-              width: pageDims.width,
-              height: pageDims.height,
-            }}
-          >
-            <canvas
-              ref={canvasRef}
-              width={pageDims.width}
-              height={pageDims.height}
-              style={{
-                width: pageDims.width,
-                height: pageDims.height,
-                cursor: "crosshair",
-                display: "block",
-              }}
-              onMouseDown={handleCanvasMouseDown}
-              onMouseUp={handleCanvasMouseUp}
-              onMouseMove={handleCanvasMouseMove}
-            />
-          </CanvasWrapper>
-        )}
-        {!pageImage && (
-          <div style={{ color: "#888", marginTop: 40 }}>
-            Upload a PDF to start editing.
-          </div>
-        )}
-      </Main>
-    </Container>
+    <>
+      <Navbar />
+      <PageContainer>
+        <Container>
+          <Sidebar>
+            <div>
+              <Title>
+                <FaPalette />
+                PDF Marker
+              </Title>
+              <Description>
+                Upload a PDF and mark different rooms using the color-coded system.
+                Draw rectangles to highlight specific areas in your floor plan.
+              </Description>
+
+              <FileUploadContainer onClick={() => fileInputRef.current.click()}>
+                <FaUpload />
+                <p>Click to upload PDF</p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  style={{ display: 'none' }}
+                />
+              </FileUploadContainer>
+            </div>
+
+            <div>
+              <Label>Room Type</Label>
+              <RoomTypeSelect
+                value={selectedRoom}
+                onChange={(e) => setSelectedRoom(e.target.value)}
+              >
+                {Object.entries(colorMap).map(([key, val]) => (
+                  <option key={key} value={key}>
+                    {val.label}
+                  </option>
+                ))}
+              </RoomTypeSelect>
+            </div>
+
+            <ButtonGroup>
+              <Button onClick={handleUndo} disabled={shapes.length === 0}>
+                <FaUndo />
+                Undo Last
+              </Button>
+              <Button
+                primary
+                onClick={handleDownload}
+                disabled={!pdfBytes || shapes.length === 0}
+              >
+                <FaDownload />
+                Download
+              </Button>
+            </ButtonGroup>
+
+            <ShapeLegend>
+              <h4>Color Legend</h4>
+              <ul>
+                {Object.entries(colorMap).map(([key, val]) => (
+                  <li key={key}>
+                    <span
+                      className="color-dot"
+                      style={{ background: val.hex }}
+                    ></span>
+                    {val.label}
+                  </li>
+                ))}
+              </ul>
+            </ShapeLegend>
+          </Sidebar>
+
+          <Main>
+            <MainHeader>
+              <h2>Floor Plan Editor</h2>
+              <Button onClick={() => window.history.back()}>
+                <FaArrowLeft />
+                Back
+              </Button>
+            </MainHeader>
+
+            {pageImage ? (
+              <>
+                <Instructions>
+                  <FaInfoCircle />
+                  <p>
+                    Click and drag on the floor plan to draw rectangles. Select a room
+                    type from the sidebar before drawing. Use the undo button to
+                    remove mistakes.
+                  </p>
+                </Instructions>
+
+                <CanvasWrapper
+                  style={{
+                    width: pageDims.width,
+                    height: pageDims.height,
+                  }}
+                >
+                  <canvas
+                    ref={canvasRef}
+                    width={pageDims.width}
+                    height={pageDims.height}
+                    style={{
+                      width: pageDims.width,
+                      height: pageDims.height,
+                      cursor: "crosshair",
+                      display: "block",
+                    }}
+                    onMouseDown={handleCanvasMouseDown}
+                    onMouseUp={handleCanvasMouseUp}
+                    onMouseMove={handleCanvasMouseMove}
+                  />
+                </CanvasWrapper>
+              </>
+            ) : (
+              <EmptyState>
+                <FaUpload />
+                <h3>No PDF Selected</h3>
+                <p>
+                  Upload a PDF file from the sidebar to start marking rooms on your
+                  floor plan.
+                </p>
+              </EmptyState>
+            )}
+          </Main>
+        </Container>
+      </PageContainer>
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
   );
 }
 
